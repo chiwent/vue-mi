@@ -1,0 +1,17 @@
+@function px2rem($px) {
+    $rem: 37.5px;
+    @return ($px / $rem)+rem;
+}
+
+html,
+body {
+    font-size: 10px;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}

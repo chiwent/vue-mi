@@ -1,0 +1,61 @@
+<template>
+  <div class="sticky-footer">
+    <ul>
+      <li v-for="(item, index) in stickyTitle" :key="index">
+        <router-link :to="encodeURIComponent(stickyTitle[index])" class="bottom-link">
+          <img class="app-bottom-icon" :src="require('../assets/img/' + stickyIcon[index])" alt="">
+          <span :class="index === 0 ? 'bottom-info-active' : ''" class="bottom-info">{{item}}</span>
+        </router-link>
+      </li>
+    </ul>
+  </div>
+</template>
+<script>
+  export default {
+    name: 'StickyFooter',
+    data() {
+      return {
+        stickyTitle: ['首页', '分类', '购物车', '我的'],
+        stickyIcon: ['bottom-home.png', 'bottom-category.png', 'bottom-cart.png', 'bottom-mine.png']
+      }
+    }
+  }
+</script>
+<style lang="scss" scoped>
+  .sticky-footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    color: white;
+    text-align: center;
+    z-index: 9999;
+    height: 85px;
+    background-color: #fff;
+    box-shadow: 0 5px 14px 2px rgba(0,0,0,.12);
+    ul {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-left: 0;
+      li {
+        width: 100%;
+        height: 43px;
+      }
+    }
+  }
+  .bottom-link {
+    flex: 1 1 auto;
+    color: gray;
+    padding: 5px;
+    .app-bottom-icon {
+      display: block;
+      width: 23px;
+      height: 23px;
+      margin: 0 auto 3px;
+    }
+  }
+  .bottom-info-active {
+    color: #ff6700;
+  }
+</style>
