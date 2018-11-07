@@ -5,13 +5,16 @@ import App from './App'
 import router from './router'
 // import vueSwiper from 'vue-awesome-swiper'
 // import 'swiper/dist/css/swiper.css'
-
+// import BgaBackTop from 'bga-back-top-vue'
 import './utils/rem'
 import 'normalize.css'
 import './style/main.scss'
 
+// Vue.use(BgaBackTop)
+
 Vue.config.productionTip = false
     // Vue.use(vueSwiper);
+
 
 /* eslint-disable no-new */
 new Vue({

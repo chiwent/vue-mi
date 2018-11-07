@@ -3,6 +3,16 @@
     @return ($px / $rem)+rem;
 }
 
+@mixin full-size {
+    width: 100%;
+    height: 100%;
+}
+
+@mixin lheight($h) {
+    height: $h;
+    line-height: $h;
+}
+
 html,
 body {
     font-size: 10px;

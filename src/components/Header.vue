@@ -28,40 +28,66 @@
             <div class="nav-item-layer" v-show="dropDown">
               <div class="title">全部</div>
               <div class="btn-wrap" ref="btnlist">
-                <span class="extra-btn mr-interval"  @click="selectTag($event, index)" :class="index === 0 ? 'tag-active' : ''" v-for="(item, index) in navItem" :key="index">{{item}}</span>
+                <span class="extra-btn mr-interval"  @click="select($event, index)" :class="index === 0 ? 'tag-active' : ''" v-for="(item, index) in navItem" :key="index">{{item}}</span>
+                <!-- <router-link :to="navEn[index]" class="extra-btn mr-interval" @click="select($event, index)" :class="index === 0 ? 'tag-active' : ''" v-for="(item, index) in navItem" :key="index">{{item}}</router-link> -->
               </div>
             </div>
             <div class="nav" v-show="!dropDown">
               <!--
-              <div class="nav-item">
-                <span class="tag-active" style="color: rgb(237, 91, 0); border-color: rgb(237, 91, 0);">推荐</span>
-              </div>
-              -->
+                <div class="nav-item">
+                  <span class="tag-active" style="color: rgb(237, 91, 0); border-color: rgb(237, 91, 0);">推荐</span>
+                </div>
+                -->
               <div class="nav-item" ref="navlist">
-                <span v-for="(item, index) in navItem" :key="index" style="color: rgb(116, 116, 116); border-color: rgb(242, 242, 242);" @click="selectNav($event)" :class="index === 0 ? 'nav-active' : ''">{{item}}</span>
+                <span class="nav-btn" v-for="(item, index) in navItem" :key="index" style="color: rgb(116, 116, 116); border-color: rgb(242, 242, 242);" @click="select($event, index)" :class="index === 0 ? 'nav-active' : ''">{{item}}</span>
+                <!-- <router-link :to="navEn[index]" class="nav-btn" v-for="(item, index) in navItem" :key="index" style="color: rgb(116, 116, 116); border-color: rgb(242, 242, 242);" @click="select($event, index)" :class="index === 0 ? 'nav-active' : ''">{{item}}</router-link> -->
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div :class="dropDown === true ? 'popup-mask' : ''"></div>
+    <div :class="dropDown === true ? 'popup-mask' : ''" @click="rmMask"></div>
   </div>
 </template>
 
 <script>
   export default {
     name: 'HomeHeader',
+    props: ['nav'],
     data() {
       return {
         dropDown: false,
-        navItem: ['推荐','双十一狂欢', '手机', '智能', '电视', '笔记本', '生活周边', '家电', '新款游戏本', '大内存手机', '影音娱乐'],
+        navItem: ['推荐', '双十一狂欢', '手机', '智能', '电视', '笔记本', '生活周边', '家电', '新款游戏本', '大内存手机', '影音娱乐'],
+        //navEn: ['default', 'double11', 'phone', 'intelligent', 'tv', 'laptop', 'live', 'electric', 'newlaptop', 'powerphone', 'music'],
+        navBak: this.nav
       }
     },
     methods: {
+      select(e, index) {
+        let target = e.currentTarget;
+        let targetNode, targetClass;
+        // console.log('refs:',this.$refs.navlist)
+        if (target.className.split(/\s+/g).indexOf('extra-btn') !== -1) {
+          targetNode = this.$refs.btnlist.childNodes
+          targetClass = 'tag-active'
+          this.navBak = index
+          this.$emit('listenNav', this.navBak)
+          // console.log('nav:', this.navBak)
+        } else if (target.className.split(/\s+/g).indexOf('nav-btn') !== -1) {
+          targetNode = this.$refs.navlist.childNodes
+          targetClass = 'nav-active'
+          this.navBak = index
+          this.$emit('listenNav', this.navBak)
+          // console.log('nav:', this.navBak)
+        }
+        Array.prototype.forEach.call(targetNode, (item, index) => {
+          item.classList.remove(targetClass);
+        })
+        target.classList.add(targetClass);
+      },
       toggleMenu(e) {
         let target = e.target
-        console.log('target', target)
         this.dropDown = !this.dropDown
         if (this.dropDown) {
           target.classList.add('unfold')
@@ -71,8 +97,14 @@
       },
       goSearch() {
         //console.log('click search');
-        this.$router.push({ path: '/search' })
+        this.$router.push({
+          path: '/search'
+        })
       },
+      rmMask() {
+        this.dropDown = !this.dropDown
+      }
+      /*
       selectTag(e) {
         let btnList = this.$refs.btnlist.childNodes;
         let target = e.currentTarget;
@@ -89,11 +121,26 @@
           })
           target.classList.add('nav-active');
       }
+      */
+    },
+    watch: {
+      nav(val) {
+        this.navBak = val
+      }
     }
   }
 </script>
 
 <style lang="scss" scoped>
+@mixin full-size {
+    width: 100%;
+    height: 100%;
+}
+
+@mixin lheight($h) {
+    height: $h;
+    line-height: $h;
+}
   .app-view-wrapper {
     width: 100%;
     font-size: 26px;
@@ -145,8 +192,7 @@
       margin-top: 5px;
       margin-left: 20px;
       img {
-        width: 100%;
-        height: 100%;
+        @include full-size;
         border-style: none;
       }
     }
@@ -158,8 +204,7 @@
     justify-content: center;
     font-size: 15px;
     width: 80%;
-    height: 38px;
-    line-height: 38px;
+    @include lheight(38px);
     margin-top: 10px;
     .app-header-title {
       display: flex;
@@ -187,8 +232,7 @@
 
   .app-header-right {
     width: 10%;
-    height: 40px;
-    line-height: 40px;
+    @include lheight(40px);
     display: flex;
     align-items: center;
     margin-top: 15px;
@@ -200,8 +244,7 @@
       .icon-user {
         display: block;
         width: 80%;
-        height: 80%;
-        line-height: 80%;
+        @include lheight(80%);
         vertical-align: middle;
         background-image: url(../assets/img/login.png);
         background-repeat: no-repeat;
@@ -238,8 +281,7 @@
       right: 0;
       top: 0;
       width: 60px;
-      height: 35px;
-      line-height: 35px;
+      @include lheight(35px);
       background-color: #f2f2f2;
       box-shadow: -15px 0 15px 0 #f2f2f2;
       z-index: 99;
@@ -281,7 +323,7 @@
       display: flex;
       flex-wrap: wrap;
       width: 100%;
-      white-space:pre-line;
+      white-space: pre-line;
       justify-content: flex-start;
       align-items: stretch;
       padding-left: 10px;
@@ -289,8 +331,7 @@
         margin-bottom: 15px;
         display: inline-block;
         width: 40px;
-        height: 25px;
-        line-height: 25px;
+        @include lheight(25px);
         font-size: 20px;
         text-align: center;
         border: 1px solid #e5e5e5;
@@ -301,9 +342,8 @@
         margin: 5px 10px;
         display: inline-block;
         width: 100px;
-        height: 40px;
+        @include lheight(40px);
         text-align: center;
-        line-height: 40px;
         border: 1px solid #e5e5e5;
         border-radius: 4px;
         font-size: 18px;
@@ -313,11 +353,13 @@
       }
     }
   }
+
   .tag-active {
     background-color: #fde0d5;
     border-color: #ff6700;
     color: #ff6700;
   }
+
   .nav-active {
     color: rgb(237, 91, 0)!important;
     border-color: rgb(237, 91, 0)!important;
@@ -326,6 +368,7 @@
     border-bottom: 3px solid rgba(237, 91, 0, 0);
     padding: 5px;
   }
+
   .popup-mask {
     position: fixed;
     left: 0;
@@ -334,7 +377,6 @@
     bottom: 0;
     z-index: 98;
     background-color: rgba(0, 0, 0, .3);
-    width: 100%;
-    height: 100%;
+    @include full-size;
   }
 </style>
