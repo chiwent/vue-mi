@@ -1,0 +1,99 @@
+<template>
+	<div class="header">
+		<div class="header-left">
+			<router-link to="/">
+				<i class="icon-back"></i>
+			</router-link>
+		</div>
+		<div class="header-middle">
+			<slot name="title"></slot>
+		</div>
+		<div class="header-right">
+			<router-link to="/search">
+				<i class="icon-search"></i>
+			</router-link>
+		</div>
+	</div>
+</template>
+<script>
+	export default {
+		name: 'StickyHeader',
+
+	}
+</script>
+<style lang="scss" scoped>
+	.header {
+		padding: 6px;
+		position: fixed;
+		z-index: 9999;
+		top: 0;
+		left: 0;
+		right: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		color: #666;
+		background-color: #f2f2f2;
+		div {
+			display: flex;
+			align-items: center;
+		}
+		.header-left {
+			display: flex;
+			align-items: center;
+			&:first-child {
+				display: block;
+				width: 30px;
+				margin: 0 5px;
+				outline: 0;
+				.icon-back {
+					background-image: url(../assets/img/back.png);
+					width: 30px;
+					height: 30px;
+					line-height: 30px;
+					display: block;
+					background-color: transparent;
+					background-repeat: no-repeat;
+					background-position: 50%;
+					background-size: cover;
+					cursor: pointer;
+				}
+			}
+
+		}
+		.header-middle {
+			flex: 1;
+			font-size: 16px;
+			min-width: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			&:first-child {
+				color: #666;
+				margin: 0 auto;
+			}
+		}
+		.header-right {
+			width: 30px;
+			height: 30px;
+			&:first-child {
+				display: block;
+				width: 30px;
+				margin: 0 5px;
+				outline: 0;
+			}
+			.icon-search {
+				background-image: url(../assets/img/search.png);
+				min-width: 30px;
+				min-height: 30px;
+				line-height: 30px;
+				display: block;
+				background-color: transparent;
+				background-repeat: no-repeat;
+				background-position: 50%;
+				background-size: cover;
+				cursor: pointer;
+			}
+		}
+	}
+
+</style>

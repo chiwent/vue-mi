@@ -2,9 +2,11 @@
   <div class="sticky-footer">
     <ul>
       <li v-for="(item, index) in stickyTitle" :key="index">
-        <router-link :to="encodeURIComponent(stickyTitle[index])" class="bottom-link">
-          <img class="app-bottom-icon" :src="require('../assets/img/' + stickyIcon[index])" alt="">
-          <span :class="index === 0 ? 'bottom-info-active' : ''" class="bottom-info">{{item}}</span>
+        <router-link :to="stickyRoute[index]" class="bottom-link">
+          <!--<img class="app-bottom-icon" :src="require('../assets/img/' + ($route.path === stickyRoute[index] ? stickyActiveIcon[index] : stickyIcon[index]))" alt="">-->
+          <img class="app-bottom-icon" :src="require('../assets/img/' + ($route.path === (stickyRoute[index] === '/' ? '/' : '/' + stickyRoute[index]) ? stickyActiveIcon[index] : stickyIcon[index]))" alt="">
+          <!-- <span :class="index === 0 ? 'bottom-info-active' : ''" class="bottom-info">{{item}}</span> -->
+          <span :class="{'bottom-info-active': $route.path === (stickyRoute[index] === '/' ? '/' : '/' + stickyRoute[index]) }">{{item}}</span>
         </router-link>
       </li>
     </ul>
@@ -16,9 +18,15 @@
     data() {
       return {
         stickyTitle: ['首页', '分类', '购物车', '我的'],
-        stickyIcon: ['bottom-home.png', 'bottom-category.png', 'bottom-cart.png', 'bottom-mine.png']
+        stickyRoute: ['/', 'category', 'cart', 'mine'],
+        stickyIcon: ['bottom-home.png', 'bottom-category.png', 'bottom-cart.png', 'bottom-mine.png'],
+        stickyActiveIcon: ['bottom-home-active.png', 'bottom-category-active.png', 'bottom-cart.png', 'bottom-mine-active.png']
       }
-    }
+    },
+    // mounted() {
+    //   console.log(this.path)
+    //   console.log(window.location.pathname.split('/')[1])
+    // }
   }
 </script>
 <style lang="scss" scoped>

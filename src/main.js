@@ -11,7 +11,8 @@ import 'normalize.css'
 import './style/main.scss'
 
 // Vue.use(BgaBackTop)
-
+import vueScrollwatch from "vue-scrollwatch"
+Vue.use(vueScrollwatch)
 Vue.config.productionTip = false
     // Vue.use(vueSwiper);
 
