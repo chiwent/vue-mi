@@ -5,8 +5,13 @@
         <router-link :to="stickyRoute[index]" class="bottom-link">
           <!--<img class="app-bottom-icon" :src="require('../assets/img/' + ($route.path === stickyRoute[index] ? stickyActiveIcon[index] : stickyIcon[index]))" alt="">-->
           <img class="app-bottom-icon" :src="require('../assets/img/' + ($route.path === (stickyRoute[index] === '/' ? '/' : '/' + stickyRoute[index]) ? stickyActiveIcon[index] : stickyIcon[index]))" alt="">
-          <!-- <span :class="index === 0 ? 'bottom-info-active' : ''" class="bottom-info">{{item}}</span> -->
           <span :class="{'bottom-info-active': $route.path === (stickyRoute[index] === '/' ? '/' : '/' + stickyRoute[index]) }">{{item}}</span>
+
+          <!--<img class="app-bottom-icon" :src="require('../assets/img/' + new RegExp(stickyRoute[index]).test($route.path))" alt="">
+          <span :class="{'bottom-info-active': new RegExp(stickyRoute[index]).test($route.path) }">{{item}}</span>-->
+
+          <!--<img class="app-bottom-icon" :src="require('../assets/img/' + $route.path.match(new RegExp(stickyIcon[index]))[0])" alt="">
+          <span :class="{'bottom-info-active': $route.path.match(new RegExp(stickyRoute[index]))[0] !== void 0 }">{{item}}</span>-->
         </router-link>
       </li>
     </ul>

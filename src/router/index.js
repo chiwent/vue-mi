@@ -5,7 +5,12 @@ import Search from '../components/Search'
 import Categories from '../views/Categories'
 import Mine from '../views/Mine'
 import Order from '../views/Order'
-import Coupon from '../views/Coupon'
+import Coupon from '../components/Coupon'
+import Mpointsmall from '../components/Mpointsmall'
+import Maplocation from '../components/Maplocation'
+import Fcode from '../components/Fcode'
+import Setting from '../components/Setting'
+import Services from '../components/Services'
 // import Default from '../components/Default'
 // import Double11 from '../components/Double11'
 // import Phone from '../components/Phone'
@@ -32,33 +37,37 @@ export default new Router({
         name: 'Category',
         component: Categories
     }, {
-        path: '/mine/:id',
-        // name: 'Mine',
-        // component: Mine,
-        children: [
-            {
-                path: '',  
-                name: 'Mine',    
-                component: Mine
-            },
-            {
-                path: 'coupon',
-                name: 'MineCoupon',
-                component: Coupon
-            },
-        ]
+        path: '/mpointsmall',
+        name: 'Mpointsmall',
+        component: Mpointsmall
+    }, {
+        path: '/mine',
+        name: 'Mine',
+        component: Mine,
+    }, {
+        path: '/mine/coupon',
+        component: Coupon
     }, {
         path: '/order/:orderType',
         name: 'Order',
         component: Order
     }, {
         path: '/maplocation/:address',
-        name: 'Maplocation',
+        component: Maplocation,
         children: [
             {
                 path: 'address',
                 query: {location_type: 'mihome'}
             }
         ]
+    }, {
+        path: '/services',
+        component: Services
+    },{
+        path: '/fcode',
+        component: Fcode
+    }, {
+        path: '/set',
+        component: Setting
     }]
 })

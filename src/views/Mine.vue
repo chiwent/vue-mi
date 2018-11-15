@@ -1,4 +1,5 @@
 <template>
+	<div>
 	<div class="container">
 		<div class="header">
 			<div class="user">
@@ -34,16 +35,37 @@
 		<ul class="row-items">
 			<li v-for="(item, index) in routes" class="row-li">
 				<img :src="require('../assets/img/' + item.img)" alt={item.img}>
-				<router-link :to="{name: item.name, params: item.params, query: {location_type: item.query}}" class="row-link">
+				<!--<router-link :to="{name: item.name, params: item.params, query: {location_type: item.query}}" class="row-link">
 					{{item.info}}
-				</router-link>
+				</router-link>-->
+				<router-link :to=item.path class="row-link">{{item.info}}</router-link>
 			</li>
 		</ul>
 	</div>
+	<sticky-footer></sticky-footer>
+</div>
 </template>
 <script>
+	import StickyFooter from '../components/StickyFooter'
+	import Mpointsmall from '../components/Mpointsmall'
+	import Coupon from '../components/Coupon'
+	import Services from '../components/Services'
+	import Mihome from '../components/Mihome'
+	import Fcode from '../components/Fcode'
+	import Setting from '../components/Setting'
+	import Maplocation from '../components/Maplocation'
 	export default {
 		name: 'Mine',
+		components: {
+			StickyFooter,
+			Mpointsmall,
+			Coupon,
+			Services,
+			Mihome,
+			Fcode,
+			Setting,
+			Maplocation
+		},
 		data() {
 			return {
 				orderType: 'list',
@@ -58,13 +80,23 @@
 						id: 9, name: '退换修', img: 'return.png'
 					}
 				],
+				/*
 				routes: [
 					{ name: 'Mpointsmall', params: '', query: '', img: 'vip.png', info: '会员中心'},
 					{ name: 'MineCoupon', params: 'coupon', query: '', img: 'wallet.png', info: '我的优惠'},
 					{ name: 'Services', params: '', query: '', img: 'service.png', info: '服务中心'},
 					{ name: 'Maplocation', params: 'address', type: 'mihome', img: 'mihome.png', info: '小米之家'},
-					{ name: 'Fcode', params: '', query: '', img: 'fcode.png', info: '小米之家'},
+					{ name: 'Fcode', params: '', query: '', img: 'fcode.png', info: 'F码'},
 					{ name: 'Setting', params: '', query: '', img: 'setting.png', info: '设置'}
+				]
+				*/
+				routes: [
+					{ path: '/mpointsmall', img: 'vip.png', info: '会员中心'},
+					{ path: '/mine/coupon', img: 'wallet.png', info: '我的优惠'},
+					{ path: '/services',  img: 'service.png', info: '服务中心'},
+					{ path: '/maplocation/address?location_type=mihome', img: 'mihome.png', info: '小米之家'},
+					{ path: '/fcode', img: 'fcode.png', info: 'F码'},
+					{ path: '/set',  img: 'setting.png', info: '设置'}
 				]
 			}
 		}
@@ -79,7 +111,7 @@
 		.header {
 			background: url(../assets/img/login-bg.png) center 0 #f37d0f;
 			background-size: auto 100%;
-			padding: 10px 0;
+			padding: 20px 0;
 		}
 	}
 	.user {
@@ -87,8 +119,8 @@
 		align-items: center;
 		.login-img {
 			margin: 0 10px 0 20px;
-			width: 50px;
-			height: 50px;
+			width: 70px;
+			height: 70px;
 			overflow: hidden;
 			box-sizing: border-box;
 			border-radius: 100%;
@@ -109,7 +141,7 @@
 	}
 	.my-order {	
 		background-color: #fff;
-		height: 40px;
+		height: 60px;
 		border-bottom: 1px solid rgba(0, 0, 0, .3);
 		position: relative;
 		padding-right: 13px;
@@ -172,18 +204,36 @@
 		}
 	}
 	.row-items {
-		background-color: #fff;
+		padding: 0;
+		width: 100%;
+		// padding-left: 25px;
 		.row-li {
+			background-color: #fff;
 			position: relative;
 			color: rgba(0, 0, 0, .5);
 			line-height: 0;
+			padding: 20px 0;
+			padding-left: 25px;
 			.row-link {
 				padding-right: 15px;
 				padding-left: 30px;
 				height: 30px;
-				&:nth-child(even) {
-					border-bottom: 1px solid rgba(150, 150, 150, .15);
-				}
+				line-height: 30px;
+				vertical-align: middle;
+				font-size: 25px;
+				font-weight: 400;
+				color: #969696;
+			}
+			&:nth-child(odd) {
+				border-bottom: 1px solid rgba(150, 150, 150, .15);
+			}
+			&:nth-child(even) {
+				margin-bottom: 10px;
+			}
+			img {
+				width: 40px;
+				height: 40px;
+				vertical-align: middle;
 			}
 		}
 	}

@@ -1,9 +1,9 @@
 <template>
 	<div class="header">
 		<div class="header-left">
-			<router-link to="/">
+			<a @click="$router.go(-1)" to>
 				<i class="icon-back"></i>
-			</router-link>
+			</a>
 		</div>
 		<div class="header-middle">
 			<slot name="title"></slot>
@@ -18,7 +18,6 @@
 <script>
 	export default {
 		name: 'StickyHeader',
-
 	}
 </script>
 <style lang="scss" scoped>
@@ -43,14 +42,14 @@
 			align-items: center;
 			&:first-child {
 				display: block;
-				width: 30px;
+				width: 40px;
 				margin: 0 5px;
 				outline: 0;
 				.icon-back {
 					background-image: url(../assets/img/back.png);
-					width: 30px;
-					height: 30px;
-					line-height: 30px;
+					width: 40px;
+					height: 40px;
+					line-height: 40px;
 					display: block;
 					background-color: transparent;
 					background-repeat: no-repeat;
@@ -63,7 +62,7 @@
 		}
 		.header-middle {
 			flex: 1;
-			font-size: 16px;
+			font-size: 30px;
 			min-width: 0;
 			white-space: nowrap;
 			overflow: hidden;
@@ -73,19 +72,19 @@
 			}
 		}
 		.header-right {
-			width: 30px;
-			height: 30px;
+			width: 40px;
+			height: 40px;
 			&:first-child {
 				display: block;
-				width: 30px;
+				width: 40px;
 				margin: 0 5px;
 				outline: 0;
 			}
 			.icon-search {
 				background-image: url(../assets/img/search.png);
-				min-width: 30px;
-				min-height: 30px;
-				line-height: 30px;
+				min-width: 40px;
+				min-height: 40px;
+				line-height: 40px;
 				display: block;
 				background-color: transparent;
 				background-repeat: no-repeat;

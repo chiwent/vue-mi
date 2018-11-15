@@ -1,8 +1,8 @@
 <template>
-	<div>Coupon</div>
+	<div>Maplocation</div>
 </template>
 <script>
 	export default {
-		name: 'Coupon'
+		name: 'Maplocation'
 	}
 </script>
