@@ -5,22 +5,21 @@
   </div>
 </template>
 <script>
-  export default {
-    name: 'TwoColumns',
-
-  }
+export default {
+  name: "TwoColumns"
+};
 </script>
 <style lang="scss" scoped>
-  .container {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    height: 412px;
-    .half-col {
-      width: 50%;
-      height: 100%;
-    }
+.container {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 370px;
+  .half-col {
+    width: 50%;
+    height: 100%;
   }
+}
 </style>

@@ -3,7 +3,7 @@
 	<div class="container">
 		<div class="list-navbar">
 			<ul class="left-bar">
-				<li v-for="(item, index) in leftBar" @click="scrollTo(item)" :class="{active: activeMenu === item}">
+				<li v-for="(item, index) in leftBar" @click="scrollTo(item)" :class="{active: activeMenu === item}" :key="index">
 					 <!-- <router-link :to=""><span>{{}}</span></router-link>  -->
 					{{item}}
 				</li>
@@ -11,7 +11,7 @@
 		</div>
 		<div class="list-wrap">
 			<div class="list-rightbar">
-				<div  v-for="(item, index) in rightBar" v-scrollWatch="{name : item.id, offset : 0, callback : spyDomChange}">
+				<div  v-for="(item, index) in rightBar" v-scrollWatch="{name : item.id, offset : 0, callback : spyDomChange}" :key="index">
 					<div class="title-img-wrap" v-if="item.titleImg !== void 0">
 						<img :src="require('../assets/img/' + item.titleImg)" alt="item.titleImg">
 					</div>
@@ -22,7 +22,7 @@
 					</div>
 					<div class="category-group">
 						<div class="box">
-							<div class="product" v-for="(item2, index) in item.items">
+							<div class="product" v-for="(item2, index) in item.items" :key="index">
 								<div class="product-wrap">
 									<img :src="require('../assets/img/' + item2.img)" alt={item2.img} class="product-icon">
 									<p class="product-info">
@@ -38,7 +38,7 @@
 			</div>
 		</div>
 	</div>
-	<sticky-footer></sticky-footer>
+	<sticky-footer :activePage="1"></sticky-footer>
 	</div>
 </template>
 <script>
@@ -283,15 +283,10 @@
 				background-color: #fff;
 				margin: -5px 0 0;
 				display: flex;
-				// justify-content: space-around;
-				// align-items: center;
 				width: 100%;
 				.box {
 					width: 100%;
-					// display: flex;
 					overflow: hidden;
-					// justify-content: space-around;
-					// align-items: center;
 					flex: 1 1 auto;
 					.product {
 						float: left;

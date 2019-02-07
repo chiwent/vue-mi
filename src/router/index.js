@@ -1,73 +1,82 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Main from '../views/Main'
-import Search from '../components/Search'
-import Categories from '../views/Categories'
-import Mine from '../views/Mine'
-import Order from '../views/Order'
-import Coupon from '../components/Coupon'
-import Mpointsmall from '../components/Mpointsmall'
-import Maplocation from '../components/Maplocation'
-import Fcode from '../components/Fcode'
-import Setting from '../components/Setting'
-import Services from '../components/Services'
-// import Default from '../components/Default'
-// import Double11 from '../components/Double11'
-// import Phone from '../components/Phone'
 
 Vue.use(Router)
+
+function loadView(view) {
+    return () => import(/* webpackChunkName: "view" */ `@/views/${view}.vue`)
+}
+function loadComponents(component) {
+    return () => import(/* webpackChunkName: "components" */ `@/components/${component}.vue`)
+}
 
 export default new Router({
     mode: 'history',
     routes: [{
         path: '/',
         name: 'Main',
-        component: //{
-            Main,
-        // default: Default,
-        // double11: Double11,
-        // phone: Phone
-        //}
+        component: loadView('Main')
     }, {
         path: '/search',
         name: 'Search',
-        component: Search
+        component: loadComponents('Search')
     }, {
         path: '/category',
         name: 'Category',
-        component: Categories
+        component: loadView('Categories')
     }, {
         path: '/mpointsmall',
         name: 'Mpointsmall',
-        component: Mpointsmall
+        component: loadComponents('Mpointsmall')
     }, {
-        path: '/mine',
-        name: 'Mine',
-        component: Mine,
+        path: '/user',
+        name: 'User',
+        component: loadView('User'),
     }, {
-        path: '/mine/coupon',
-        component: Coupon
+        name: 'Coupon',
+        path: 'coupon',
+        component: loadView('Coupon'),
+        meta: {
+            requireAuth: true
+        }
     }, {
-        path: '/order/:orderType',
+        name: 'Set',
+        path: '/user/set',
+        component: loadView('Set'),
+        meta: {
+            requireAuth: true
+        }
+    }, {
+        path: '/order',
         name: 'Order',
-        component: Order
+        component: loadView('Order'),
+        children: [
+            {
+                name: 'orderList',
+                path: 'list',
+                component: loadView('OrderList')
+            }
+        ]
     }, {
         path: '/maplocation/:address',
-        component: Maplocation,
+        component: loadComponents('Maplocation'),
         children: [
             {
                 path: 'address',
-                query: {location_type: 'mihome'}
+                query: { location_type: 'mihome' }
             }
         ]
     }, {
         path: '/services',
-        component: Services
-    },{
-        path: '/fcode',
-        component: Fcode
+        component: loadComponents('Services')
     }, {
-        path: '/set',
-        component: Setting
+        path: '/fcode',
+        component: loadView('Fcode')
+    }, {
+        path: '/login',
+        component: loadView('Login')
+    }, {
+        path: '/cart',
+        component: loadView('Cart')
     }]
 })
