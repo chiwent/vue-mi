@@ -17,6 +17,11 @@ export default new Router({
         name: 'Main',
         component: loadView('Main')
     }, {
+        // path: '/commodity/detail/:id',
+        path: '/commodity/detail/mi8s', // 暂时只有小米8青春版提供
+        name: 'ProductDetail',
+        component: loadView('ProductDetail')
+    }, {
         path: '/search',
         name: 'Search',
         component: loadComponents('Search')
@@ -50,11 +55,17 @@ export default new Router({
         path: '/order',
         name: 'Order',
         component: loadView('Order'),
+        meta: {
+            requireAuth: true
+        },
         children: [
             {
                 name: 'orderList',
                 path: 'list',
-                component: loadView('OrderList')
+                component: loadView('OrderList'),
+                meta: {
+                    requireAuth: true
+                }
             }
         ]
     }, {
@@ -78,5 +89,8 @@ export default new Router({
     }, {
         path: '/cart',
         component: loadView('Cart')
+    }, {
+        path: '*',
+        component: loadView('404')
     }]
 })

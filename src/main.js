@@ -24,7 +24,7 @@ let initUserInfo = getStorage({
 });
 const initUserName = !!initUserInfo ? JSON.parse(JSON.stringify(initUserInfo)).content : '';
 
-/*
+
 router.beforeEach((to, from, next) => {
     if (to.meta.requireAuth) {
         const user = initUserName;
@@ -39,7 +39,6 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
-*/
 
 /* eslint-disable no-new */
 new Vue({

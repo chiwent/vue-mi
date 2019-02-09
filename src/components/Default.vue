@@ -25,7 +25,7 @@
     </div>
     <two-columns>
       <div slot="left" class="half-col">
-        <router-link to="/mi8s" id="mi8s">
+        <router-link to="/commodity/detail/mi8s" id="mi8s">
           <img :src="require('../assets/img/mi8s.jpg')" alt="mi8s" class="col-img">
         </router-link>
       </div>
@@ -44,21 +44,21 @@
     </two-columns>
     <one-column>
       <div class="one-col">
-        <router-link to="/mix3">
+        <router-link to="/commodity/detail/mix3">
           <img :src="require('../assets/img/mix3.jpg')" alt="mix3">
         </router-link>
       </div>
     </one-column>
     <one-column>
       <div class="one-col">
-        <router-link to="/redmi6">
+        <router-link to="/commodity/detail/redmi6">
           <img :src="require('../assets/img/redmi6.jpg')" alt="redmi6">
         </router-link>
       </div>
     </one-column>
     <two-columns>
       <div class="half-col" slot="left">
-        <router-link to="/mi8s">
+        <router-link to="/commodity/detail/mi8s">
           <img :src="require('../assets/img/mi8s-l.jpg')" alt="mi8s-l">
         </router-link>
         <p class="col-title">小米8 青春版</p>
@@ -66,7 +66,7 @@
         <p class="col-price">￥1399起</p>
       </div>
       <div class="half-col" slot="right">
-        <router-link to="/mi8new">
+        <router-link to="/commodity/detail/mi8new">
           <img :src="require('../assets/img/mi8finger.jpg')" alt="mi8finger">
         </router-link>
         <p class="col-title">小米8 屏幕指纹版</p>
@@ -76,7 +76,7 @@
     </two-columns>
     <two-columns>
       <div class="half-col" slot="left">
-        <router-link to="/redmi6a">
+        <router-link to="/commodity/detail/redmi6a">
           <img :src="require('../assets/img/redmi6a.jpg')" alt="redmi6a">
         </router-link>
         <p class="col-title">红米6A</p>
@@ -87,7 +87,7 @@
         </p>
       </div>
       <div class="half-col" slot="right">
-        <router-link to="/mi6x">
+        <router-link to="/commodity/detail/mi6x">
           <img :src="require('../assets/img/mi6x.jpg')" alt="mi6x">
         </router-link>
         <p class="col-title">小米6X</p>
@@ -100,7 +100,7 @@
     </two-columns>
     <two-columns>
       <div class="half-col" slot="left">
-        <router-link to="/mi8se">
+        <router-link to="/commodity/detail/mi8se">
           <img :src="require('../assets/img/mi8se.jpg')" alt="mi8se">
         </router-link>
         <p class="col-title">小米8 SE</p>
@@ -111,7 +111,7 @@
         </p>
       </div>
       <div class="half-col" slot="right">
-        <router-link to="/mipad4">
+        <router-link to="/commodity/detail/mipad4">
           <img :src="require('../assets/img/mipad4.jpg')" alt="mipad4">
         </router-link>
         <p class="col-title">小米平板4</p>
@@ -129,7 +129,7 @@
         <p class="col-price">￥3199起</p>
       </div>
       <div class="half-col" slot="right">
-        <router-link to="/redmi6">
+        <router-link to="/commodity/detail/redmi6">
           <img :src="require('../assets/img/redmi6-s.jpg')" alt="redmi6">
         </router-link>
         <p class="col-title">红米6</p>
@@ -146,13 +146,9 @@
   </div>
 </template>
 <script>
-// import HomeHeader from '../components/Header'
 import OneColumn from "./OneColumn";
 import TwoColumns from "./TwoColumns";
-// import HomeFooter from '../components/Footer'
-// import StickyFooter from '../components/StickyFooter'
 import "swiper/dist/css/swiper.css";
-// let midIcon = require.context('../assets/img/', false, /\.jpg$/);
 
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 

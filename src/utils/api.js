@@ -3,7 +3,8 @@ import axios from "axios";
 export const api = {
     loginApi: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/login',
     orderList: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/orderList',
-    cartList: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/cartList'
+    cartList: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/cartList',
+    product: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/product'
 }
 
 /**
@@ -31,6 +32,10 @@ export const getOrderList = params => {
     })
 }
 
+/**
+ * 获取购物车详情
+ * @param { Object } params 获取购物车详情参数
+ */
 export const getCartList = params => {
     let { userName, token } = params;
     return new Promise((resolve, reject) => {
@@ -48,4 +53,25 @@ export const getCartList = params => {
             reject();
         });
     })
+}
+
+/**
+ * 获取商品详情
+ * @param { String } id 商品详情页ID
+ */
+export const getProductDetail = id => {
+    return new Promise((resolve, reject) => {
+        axios({
+            url: api.product,
+            params: {
+                id: id
+            },
+            method: 'GET'
+        }).then(res => {
+            res = res.data.result;
+            resolve(res);
+        }).catch(err => {
+            reject();
+        });
+    });
 }
