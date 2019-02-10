@@ -73,14 +73,36 @@
           >{{ productDetail.title }} {{ defaultParam.content }} {{ defaultParam.def }} × {{ totalNum }}</span>
           <div class="arrow"></div>
         </section>
+        <van-popup class="product-popup" v-model="isProductShow" position="bottom">
+          <div class="header">
+            <span class="close-btn" @click="isProductShow = false"></span>
+          </div>
+          <div class="content"></div>
+        </van-popup>
         <section class="send-to"></section>
-        <section class="rules">
+        <section class="rules" @click="isRuleShow = true">
           <div class="rule-item" v-for="(ruleItem, ruleIndex) in rules" :key="ruleIndex">
             <i class="icon"></i>
             <span class="rule-desc">{{ ruleItem }}</span>
           </div>
           <div class="arrow"></div>
         </section>
+        <van-popup class="rules-popup" v-model="isRuleShow" position="bottom">
+          <div class="header">
+            <h3 class="title">服务说明</h3>
+            <span class="close-btn" @click="isRuleShow = false"></span>
+          </div>
+          <div class="content">
+            <div class="content-wrapper" v-for="(item, index) in serviceList" :key="index">
+              <div class="icon"></div>
+              <div class="word">
+                <h3 class="title">{{ item.title }}</h3>
+                <p class="desc" v-if="item.desc">{{ item.desc }}</p>
+                <div class="arrow" v-if="index === 4"></div>
+              </div>
+            </div>
+          </div>
+        </van-popup>
       </section>
       <section class="comment">
         <swiper :option="commentOption">
@@ -97,7 +119,7 @@
                   <div class="user-date">{{ commentItem.date }}</div>
                 </div>
                 <div class="like">
-                  <i class="icon"></i>
+                  <i ref="icon" @click.stop="likeIt(commentIndex)"></i>
                   <span class="num">{{ commentItem.likes }}</span>
                 </div>
               </div>
@@ -124,8 +146,10 @@
 </template>
 <script>
 import "swiper/dist/css/swiper.css";
+import { mapGetters } from "vuex";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
-import { getProductDetail } from "@/utils/api";
+import { getProductDetail, getLike } from "@/utils/api";
+import { addClass, removeClass } from "@/utils/utils";
 export default {
   name: "ProductDetail",
   components: {
@@ -137,7 +161,33 @@ export default {
       productDetail: void 0,
       totalNum: 1,
       rules: ["小米自营", "小米发货", "7天无理由退货"],
+      serviceList: [
+        {
+          title: "小米自营",
+          desc: null
+        },
+        {
+          title: "小米发货",
+          desc: "由小米发货"
+        },
+        {
+          title: "7天无理由退货",
+          desc: null
+        },
+        {
+          title: "运费说明",
+          desc:
+            "由小米发货的商品，单笔满150元免运费;由第三方商家发货的商品，免运费;特殊商品需要单独收取运费，具体以实际结算金额为准；优惠券等不能抵扣运费金额;"
+        },
+        {
+          title: "售后服务政策",
+          desc: null
+        }
+      ],
+      isProductShow: false,
       isPromoShow: false,
+      isRuleShow: false,
+      isIconActive: false,
       defaultParam: {},
       totalNum: 1,
       bannerOption: {
@@ -155,11 +205,17 @@ export default {
       commentOption: {}
     };
   },
+  computed: {
+    ...mapGetters(["loginUserName", "loginUserToken", "isLogined"])
+  },
   created() {
     let productId = this.$route.path.split("/commodity/detail/")[1];
     this.$nextTick(() => {
       getProductDetail(productId).then(res => {
         this.productDetail = res;
+        this.productDetail.comments.forEach((item, index) => {
+          item.likeNew = item.likes;
+        });
         this.defaultParam = this.productDetail.type.find(item => item.def);
       });
     });
@@ -172,6 +228,39 @@ export default {
     share() {},
     showPopup() {
       this.isPromoShow = true;
+    },
+    /**
+     * 点赞功能
+     * @param { Number } index 数组索引
+     */
+    likeIt(index) {
+      if (!this.isLogined) {
+        this.$router.replace({
+          path: "/login"
+        });
+      } else {
+        let _like = this.productDetail.comments[index].likes;
+        let _likeNew = this.productDetail.comments[index].likeNew;
+        if (_like <= _likeNew) {
+          getLike({
+            userName: this.loginUserName,
+            token: this.loginUserToken,
+            like: _like
+          })
+            .then(res => {
+              this.productDetail.comments[index].likes = res.like;
+              addClass(this.$refs.icon[index], "icon-active");
+            })
+            .catch(err => {
+              this.$notify({
+                message: "网络出错!"
+              });
+            });
+        } else {
+          this.productDetail.comments[index].likes = _likeNew;
+          removeClass(this.$refs.icon[index], "icon-active");
+        }
+      }
     }
   }
 };
@@ -343,7 +432,8 @@ export default {
     @extend .e-right-arrow;
   }
 }
-.promo-popup {
+.promo-popup,
+.rules-popup {
   height: 700px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -380,14 +470,60 @@ export default {
       background-size: cover;
     }
   }
-  .content {
-    padding: 15px 20px;
+}
+.promo-popup .content {
+  padding: 15px 20px;
+  .icon {
+    display: inline-block;
+    padding: 4px;
+    background-color: #f9dac4;
+    color: #f6771d;
+    border: 1px solid #f6771d;
+  }
+}
+.rules-popup .content {
+  padding: 35px 20px;
+  .content-wrapper {
+    position: relative;
+    margin-bottom: 15px;
     .icon {
+      position: absolute;
+      top: 3px;
       display: inline-block;
-      padding: 4px;
-      background-color: #f9dac4;
-      color: #f6771d;
-      border: 1px solid #f6771d;
+      width: 15px;
+      height: 15px;
+      background: url("../assets/img/hook.png") no-repeat center center;
+      background-size: cover;
+      vertical-align: middle;
+    }
+    .word {
+      display: inline-block;
+      margin-left: 40px;
+      height: 50px;
+      line-height: 50px;
+      .title {
+        @extend .e-clear-spacing;
+        line-height: 25px;
+        font-size: 25px;
+        font-weight: 500;
+        vertical-align: middle;
+      }
+      .desc {
+        @extend .e-clear-spacing;
+        line-height: 25px;
+        color: #aaaaaa;
+      }
+      .arrow {
+        position: absolute;
+        top: 5px;
+        right: 20px;
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-right: 2px solid #cccccc;
+        border-top: 2px solid #cccccc;
+        transform: rotate(45deg);
+      }
     }
   }
 }
@@ -454,6 +590,8 @@ export default {
       @extend .e-right-arrow;
     }
   }
+  .rules-popup {
+  }
 }
 
 .comment {
@@ -494,7 +632,13 @@ export default {
           display: inline-block;
           width: 20px;
           height: 20px;
-          background: url("../assets/img/like.png") no-repeat center center;
+          background: url("../assets/img/like-default.png") no-repeat center
+            center;
+          background-size: cover;
+        }
+        .icon-active {
+          background: url("../assets/img/like-active.png") no-repeat center
+            center;
           background-size: cover;
         }
       }

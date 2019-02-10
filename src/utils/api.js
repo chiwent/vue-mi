@@ -4,7 +4,8 @@ export const api = {
     loginApi: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/login',
     orderList: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/orderList',
     cartList: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/cartList',
-    product: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/product'
+    product: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/product',
+    like: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/like'
 }
 
 /**
@@ -74,4 +75,28 @@ export const getProductDetail = id => {
             reject();
         });
     });
+}
+
+/**
+ * 点赞
+ * @param { Object } params 点赞的参数
+ */
+export const getLike = params => {
+    let { userName, token, like } = params;
+    return new Promise((resolve, reject) => {
+        axios({
+            url: api.like,
+            params: {
+                userName: userName,
+                token: token,
+                like: like
+            },
+            method: 'GET'
+        }).then(res => {
+            res = res.data.result;
+            resolve(res);
+        }).catch(err => {
+            reject();
+        });
+    })
 }
