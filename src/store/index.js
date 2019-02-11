@@ -51,6 +51,7 @@ export default new Vuex.Store({
         */
         product: [],
         cartNum: 0,
+        productParam: {}
     },
     mutations: {
         AUTH_REQUEST(state) {
@@ -90,6 +91,10 @@ export default new Vuex.Store({
             state.cartNum = state.product.reduce((prev, next) => {
                 return prev.num + next.num;
             });
+        },
+        SELECTPRODUCT(state, payload) {
+            state.productParam = payload;
+            // debugger
         }
     },
     actions: {
@@ -182,6 +187,11 @@ export default new Vuex.Store({
         addCart({ commit }, payload) {
             return new Promise((resolve, reject) => {
                 commit('ADDTOCART', payload);
+            });
+        },
+        selectProduct({ commit }, payload) {
+            return new Promise((reoslve, reject) => {
+                commit('SELECTPRODUCT', payload);
             });
         }
     },

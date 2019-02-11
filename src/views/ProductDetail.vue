@@ -66,18 +66,58 @@
       </section>
 
       <section class="third-row">
-        <section class="selected">
+        <section class="selected" @click="isProductShow = true">
           <span class="title">已选</span>
           <span
             class="detail"
           >{{ productDetail.title }} {{ defaultParam.content }} {{ defaultParam.def }} × {{ totalNum }}</span>
           <div class="arrow"></div>
         </section>
+
+        <!-- 购物车详情 -->
         <van-popup class="product-popup" v-model="isProductShow" position="bottom">
           <div class="header">
             <span class="close-btn" @click="isProductShow = false"></span>
           </div>
-          <div class="content"></div>
+          <div class="content">
+            <div class="product-title">
+              <img
+                :src="require('../assets/img/' + (selectImg ? selectImg :productDetail.imgs[0]))"
+                class="product-img"
+              >
+              <div class="price">
+                <div class="wrapper">
+                  <span class="now-price">￥{{ defaultParam.price }}</span>
+                  <span class="old-price">￥{{ defaultParam.oPrice }}</span>
+                </div>
+                <p class="desc">{{ productDetail.title }} {{ defaultParam.content }}</p>
+              </div>
+            </div>
+            <div class="version">
+              <p class="title">版本</p>
+              <button
+                class="version-btn"
+                v-for="(item, index) in productDetail.type"
+                :key="index"
+                :class="{'version-selected': paramsIndex === index}"
+                @click="selectVersion(index)"
+              >
+                <span>{{ item.content }} 全网通</span>
+                <span>{{ item.price }}</span>
+              </button>
+            </div>
+            <div class="color">
+              <p class="title">颜色</p>
+              <button
+                class="color-btn"
+                v-for="(item, index) in (selectParam ? productDetail.type[selectParam].color : defaultParam.color)"
+                :class="{'color-selected': index === colorIndex}"
+                :key="index"
+                @click="selectColor(index)"
+              >{{ item.c }}</button>
+            </div>
+          </div>
+          <button class="submit-cart" @click="addToCart">加入购物车</button>
         </van-popup>
         <section class="send-to"></section>
         <section class="rules" @click="isRuleShow = true">
@@ -141,6 +181,23 @@
           </swiper-slide>
         </swiper>
       </section>
+
+      <div class="sticky-bar">
+        <router-link to="/" class="bar-item">
+          <div class="wrapper">
+            <img :src="require('../assets/img/bottom-home.png')" alt="home">
+            <span class="word">首页</span>
+          </div>
+        </router-link>
+        <router-link to="/cart" class="bar-item">
+          <div class="wrapper">
+            <img :src="require('../assets/img/bottom-cart.png')" alt="cart">
+            <span class="cart-badge" v-if="!!cartNumGetters">{{ cartNumGetters }}</span>
+            <span class="word">购物车</span>
+          </div>
+        </router-link>
+        <button class="add-cart" @click.stop="addToCart">加入购物车</button>
+      </div>
     </div>
   </div>
 </template>
@@ -158,10 +215,10 @@ export default {
   },
   data() {
     return {
-      productDetail: void 0,
-      totalNum: 1,
-      rules: ["小米自营", "小米发货", "7天无理由退货"],
+      productDetail: void 0, // 服务器获取的商品详情信息
+      rules: ["小米自营", "小米发货", "7天无理由退货"], // 服务列表
       serviceList: [
+        // 服务列表popup的内容
         {
           title: "小米自营",
           desc: null
@@ -184,18 +241,24 @@ export default {
           desc: null
         }
       ],
-      isProductShow: false,
-      isPromoShow: false,
-      isRuleShow: false,
+      isProductShow: false, // 是否显示产品选购的popup
+      isPromoShow: false, // 是否显示促销的popup
+      isRuleShow: false, // 是否显示产品服务规则的popup
       isIconActive: false,
-      defaultParam: {},
-      totalNum: 1,
+      selectImg: void 0, // 选择的产品的图片
+      selectParam: void 0, // 选择的参数配置
+      colorIndex: 0, // 选择的颜色索引
+      paramsIndex: 0, // 选择的版本索引
+      defaultParam: {}, // 默认选择的 产品参数
+      totalNum: 1, // 选择的商品数
       bannerOption: {
+        // 大图swiper配置
         pagination: {
           el: ".swiper-pagination"
         }
       },
       paramOption: {
+        // 参数swiper配置
         slidesPerView: 4,
         scrollbar: {
           el: ".swiper-scrollbar",
@@ -206,18 +269,32 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["loginUserName", "loginUserToken", "isLogined"])
+    ...mapGetters([
+      "loginUserName",
+      "loginUserToken",
+      "isLogined",
+      "cartNumGetters"
+    ])
   },
   created() {
     let productId = this.$route.path.split("/commodity/detail/")[1];
     this.$nextTick(() => {
-      getProductDetail(productId).then(res => {
-        this.productDetail = res;
-        this.productDetail.comments.forEach((item, index) => {
-          item.likeNew = item.likes;
+      getProductDetail(productId)
+        .then(res => {
+          this.productDetail = res;
+          this.productDetail.comments.forEach((item, index) => {
+            item.likeNew = item.likes;
+          });
+          this.defaultParam = this.productDetail.type.find(item => item.def);
+          this.paramsIndex = this.productDetail.defaultParam;
+          // this.defaultParam.color = this.defaultParam.color[0].c;
+          this.$store.dispatch("selectProduct", this.defaultParam);
+        })
+        .catch(err => {
+          this.$notify({
+            message: "网络异常!"
+          });
         });
-        this.defaultParam = this.productDetail.type.find(item => item.def);
-      });
     });
   },
   mounted() {},
@@ -260,6 +337,25 @@ export default {
           this.productDetail.comments[index].likes = _likeNew;
           removeClass(this.$refs.icon[index], "icon-active");
         }
+      }
+    },
+    selectVersion(index) {
+      this.paramsIndex = index;
+      // this.$store.dispatch('selectVersion', index);
+    },
+    selectColor(index) {
+      this.colorIndex = index;
+      // this.$store.dispatch('selectColor', index);
+    },
+    /**
+     * 加入购物车
+     */
+    addToCart() {
+      if (!this.isLogined) {
+        this.$router.replace({
+          path: "/login"
+        });
+      } else {
       }
     }
   }
@@ -540,6 +636,7 @@ export default {
   }
   .desc {
     margin-left: 25px;
+    color: #e7af85;
   }
   .arrow {
     @extend .e-right-arrow;
@@ -567,6 +664,108 @@ export default {
       @extend .e-right-arrow;
     }
   }
+  .product-popup {
+    height: 700px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-sizing: border-box;
+    .header {
+      height: 35px;
+      .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        background: url("../assets/img/close.png") no-repeat center center;
+        background-size: cover;
+      }
+    }
+    .content {
+      padding: 20px;
+      .product-title {
+        position: relative;
+        width: 100%;
+        height: 150px;
+        .product-img {
+          display: inline-block;
+          width: 130px;
+          height: 130px;
+        }
+        .price {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          display: inline-block;
+          margin: auto;
+          height: 80px;
+          .now-price {
+            margin-right: 15px;
+            font-size: 35px;
+            color: #ff6700;
+          }
+          .old-price {
+            font-size: 20px;
+            color: #aaaaaa;
+            text-decoration: line-through;
+          }
+        }
+        .desc {
+          @extend .e-clear-spacing;
+          margin-top: 15px;
+          font-size: 25px;
+        }
+      }
+      .version {
+        .version-btn {
+          display: flex;
+          justify-content: space-between;
+          padding: 0 20px;
+          width: 100%;
+          height: 50px;
+          background-color: #ffffff;
+          border: 1px solid #bbbbbb;
+          &:not(:first-child) {
+            margin-top: 15px;
+          }
+        }
+        .version-selected {
+          color: #ff7600;
+          border: 1px solid #ff7600;
+        }
+      }
+      .color {
+        margin-top: 50px;
+        .color-btn {
+          width: 80px;
+          height: 40px;
+          background-color: #ffffff;
+          border: 1px solid #bbbbbb;
+          &:not(:first-child) {
+            margin-right: 20px;
+          }
+        }
+        .color-selected {
+          color: #ff7600;
+          border: 1px solid #ff7600;
+        }
+      }
+    }
+    .submit-cart {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 20px;
+      margin: auto;
+      width: 70%;
+      height: 60px;
+      color: #ffffff;
+      background-color: #ff6700;
+      border-radius: 30px;
+    }
+  }
+
   .rules {
     position: relative;
     padding: 0 20px;
@@ -671,6 +870,77 @@ export default {
         white-space: nowrap;
       }
     }
+  }
+}
+
+.sticky-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  z-index: 99;
+  width: 95%;
+  height: 80px;
+  margin: auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  opacity: 0.96;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px rgba(0, 0, 0, 0.14),
+    0 1px 10px rgba(0, 0, 0, 0.12);
+
+  .bar-item {
+    position: relative;
+    display: inline-block;
+    height: 100%;
+    width: 60px;
+    &:nth-of-type(1) {
+      margin-right: 20px;
+    }
+    .wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      img {
+        display: block;
+        margin: 0 auto 8px auto;
+        width: 30px;
+        height: 30px;
+      }
+      .word {
+        display: block;
+        color: #aaaaaa;
+      }
+      .cart-badge {
+        position: absolute;
+        top: 0;
+        right: 5px;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        color: #ffffff;
+        background-color: #e73232;
+      }
+    }
+  }
+  .add-cart {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 25px;
+    margin: auto;
+    width: 120px;
+    height: 60%;
+    background-color: #ff6700;
+    color: #ffffff;
+    border: none;
+    border-radius: 30px;
+    outline: none;
   }
 }
 </style>

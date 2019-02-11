@@ -109,7 +109,7 @@ export default {
           this.isFieldError = false;
           this.userPhone = this.phoneInput;
           this.$notify({
-            message: "验证码随便输入六位数字",
+            message: "验证码输入111111",
             background: "#10ef83"
           });
         }
