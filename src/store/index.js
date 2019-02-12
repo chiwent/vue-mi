@@ -51,7 +51,7 @@ export default new Vuex.Store({
         */
         product: [],
         cartNum: 0,
-        productParam: {}
+        addProducts: {}
     },
     mutations: {
         AUTH_REQUEST(state) {
@@ -92,10 +92,9 @@ export default new Vuex.Store({
                 return prev.num + next.num;
             });
         },
-        SELECTPRODUCT(state, payload) {
-            state.productParam = payload;
-            // debugger
-        }
+        ADDTOCART(state, payload) {
+            state.addProducts = payload;
+        },
     },
     actions: {
         login({ commit, state, dispatch }, payload) {
@@ -149,7 +148,7 @@ export default new Vuex.Store({
                 }
                 axios({
                     url: api.register,
-                    data: {
+                    params: {
                         userName: payload.userName,
                         password: payload.password
                     },
@@ -184,14 +183,24 @@ export default new Vuex.Store({
                 commit('INITCART', payload);
             })
         },
-        addCart({ commit }, payload) {
+        addToCart({ commit }, payload) {
             return new Promise((resolve, reject) => {
-                commit('ADDTOCART', payload);
-            });
-        },
-        selectProduct({ commit }, payload) {
-            return new Promise((reoslve, reject) => {
-                commit('SELECTPRODUCT', payload);
+                axios({
+                    url: api.addCart,
+                    params: {
+                        userName: payload.userName,
+                        token: payload.token,
+                        para: payload.para
+                    },
+                    method: 'POST'
+                }).then(res => {
+                    res = res.data.result;
+                    commit('ADDTOCART', payload);
+                    resolve(res);
+                }).catch(err => {
+                    reject(err);
+                });
+
             });
         }
     },

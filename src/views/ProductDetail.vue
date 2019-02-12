@@ -25,8 +25,11 @@
         <p class="selling">{{ productDetail.sell }}</p>
         <p class="desc">{{ productDetail.desc }}</p>
         <div class="price-wrapper">
-          <span class="now-price">￥{{ productDetail.nowPrice }}</span>
-          <span class="origin-price">￥{{ productDetail.originPrice }}</span>
+          <span class="now-price">￥{{ productDetail.type[paramsIndex].price }}</span>
+          <span
+            class="origin-price"
+            v-if="productDetail.type[paramsIndex].oPrice"
+          >￥{{ productDetail.type[paramsIndex].oPrice }}</span>
         </div>
       </section>
       <section class="parameter">
@@ -70,55 +73,115 @@
           <span class="title">已选</span>
           <span
             class="detail"
-          >{{ productDetail.title }} {{ defaultParam.content }} {{ defaultParam.def }} × {{ totalNum }}</span>
+          >{{ productDetail.title }} {{ selectedParam.content }} {{ selectedParam.color }} × {{ totalNum }}</span>
           <div class="arrow"></div>
         </section>
 
         <!-- 购物车详情 -->
         <van-popup class="product-popup" v-model="isProductShow" position="bottom">
-          <div class="header">
-            <span class="close-btn" @click="isProductShow = false"></span>
-          </div>
-          <div class="content">
-            <div class="product-title">
-              <img
-                :src="require('../assets/img/' + (selectImg ? selectImg :productDetail.imgs[0]))"
-                class="product-img"
-              >
-              <div class="price">
-                <div class="wrapper">
-                  <span class="now-price">￥{{ defaultParam.price }}</span>
-                  <span class="old-price">￥{{ defaultParam.oPrice }}</span>
+          <div class="popup-wrapper">
+            <div class="header">
+              <span class="close-btn" @click.stop="isProductShow = false"></span>
+              <div class="product-title">
+                <img
+                  :src="require('../assets/img/' + productDetail.imgs[colorIndex])"
+                  class="product-img"
+                >
+                <div class="price">
+                  <div class="wrapper">
+                    <span
+                      class="now-price"
+                    >￥{{ (selectedParam.price + (selectedParam.insure ? selectedParam.insure : 0) + (selectedParam.warranty ? selectedParam.warranty : 0)) * totalNum }}</span>
+                    <span
+                      class="old-price"
+                      v-if="productDetail.type[paramsIndex].oPrice"
+                    >￥{{ productDetail.type[paramsIndex].oPrice }}</span>
+                  </div>
+                  <p class="desc">{{ productDetail.title }} {{ selectedParam.content }}</p>
                 </div>
-                <p class="desc">{{ productDetail.title }} {{ defaultParam.content }}</p>
               </div>
             </div>
-            <div class="version">
-              <p class="title">版本</p>
-              <button
-                class="version-btn"
-                v-for="(item, index) in productDetail.type"
-                :key="index"
-                :class="{'version-selected': paramsIndex === index}"
-                @click="selectVersion(index)"
-              >
-                <span>{{ item.content }} 全网通</span>
-                <span>{{ item.price }}</span>
-              </button>
+            <div class="content">
+              <div class="version">
+                <p class="title">版本</p>
+                <button
+                  class="version-btn"
+                  v-for="(item, index) in productDetail.type"
+                  :key="index"
+                  :class="{'version-selected': paramsIndex === index}"
+                  @click="selectVersion(index)"
+                >
+                  <span>{{ item.content }} 全网通</span>
+                  <span>{{ item.price }}</span>
+                </button>
+              </div>
+              <div class="color">
+                <p class="title">颜色</p>
+                <button
+                  class="color-btn"
+                  v-for="(item, index) in (paramsIndex !== undefined ? productDetail.type[paramsIndex].color : defaultParam.color)"
+                  :class="{'color-selected': index === colorIndex}"
+                  :key="index"
+                  @click="selectColor(index)"
+                >{{ item.c }}</button>
+              </div>
+              <div class="amount">
+                <span class="title">购买数量</span>
+                <div class="stepper">
+                  <input
+                    type="button"
+                    value="-"
+                    :disabled="totalNum === 1"
+                    class="control"
+                    @click.stop="totalNum--"
+                  >
+                  <input type="number" value="1" v-model="totalNum" class="input">
+                  <input
+                    type="button"
+                    value="+"
+                    :disabled="totalNum >= 10"
+                    class="control"
+                    @click.stop="totalNum++"
+                  >
+                </div>
+              </div>
+              <div class="protect">
+                <p class="p-title">
+                  意外保护
+                  <i></i>
+                </p>
+                <button
+                  class="protect-btn"
+                  v-for="(item, index) in productDetail.type[paramsIndex].insure"
+                  :class="{'active': protectIndex === index}"
+                  :key="index"
+                  @click="selectProtect(index)"
+                >
+                  <span class="title">全年意外保障服务</span>
+                  <span class="price">{{ item }}元</span>
+                </button>
+              </div>
+              <div class="warranty">
+                <p class="p-title">
+                  延长保修
+                  <i></i>
+                </p>
+                <button
+                  class="protect-btn"
+                  @click="selectWarranty"
+                  :class="{'active': hasWarranty}"
+                >
+                  <span class="title">延长保修服务</span>
+                  <span class="price">{{ productDetail.type[paramsIndex].warranty }}元</span>
+                </button>
+              </div>
             </div>
-            <div class="color">
-              <p class="title">颜色</p>
-              <button
-                class="color-btn"
-                v-for="(item, index) in (selectParam ? productDetail.type[selectParam].color : defaultParam.color)"
-                :class="{'color-selected': index === colorIndex}"
-                :key="index"
-                @click="selectColor(index)"
-              >{{ item.c }}</button>
+            <div class="submit-btn-wrapper">
+              <button class="submit-cart" @click="addToCart">加入购物车</button>
             </div>
           </div>
-          <button class="submit-cart" @click="addToCart">加入购物车</button>
         </van-popup>
+
         <section class="send-to"></section>
         <section class="rules" @click="isRuleShow = true">
           <div class="rule-item" v-for="(ruleItem, ruleIndex) in rules" :key="ruleIndex">
@@ -203,7 +266,7 @@
 </template>
 <script>
 import "swiper/dist/css/swiper.css";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import { getProductDetail, getLike } from "@/utils/api";
 import { addClass, removeClass } from "@/utils/utils";
@@ -246,10 +309,13 @@ export default {
       isRuleShow: false, // 是否显示产品服务规则的popup
       isIconActive: false,
       selectImg: void 0, // 选择的产品的图片
-      selectParam: void 0, // 选择的参数配置
+      // selectParam: void 0, // 选择的参数配置
       colorIndex: 0, // 选择的颜色索引
-      paramsIndex: 0, // 选择的版本索引
-      defaultParam: {}, // 默认选择的 产品参数
+      paramsIndex: void 0, // 选择的版本索引
+      protectIndex: void 0, // 选择的意外险
+      hasWarranty: false, // 选择延长保修
+      defaultParam: void 0, // 默认选择的 产品参数
+      selectedParam: void 0, // 用户选择的产品参数
       totalNum: 1, // 选择的商品数
       bannerOption: {
         // 大图swiper配置
@@ -285,10 +351,28 @@ export default {
           this.productDetail.comments.forEach((item, index) => {
             item.likeNew = item.likes;
           });
-          this.defaultParam = this.productDetail.type.find(item => item.def);
+          for (let i = 0; i < this.productDetail.type.length; i++) {
+            for (let j = 0; j < this.productDetail.type[i].color.length; j++) {
+              if (this.productDetail.type[i].color[j].t < 1) {
+                this.productDetail.type[i].color[j].splice(colorIndex, 1);
+              }
+            }
+          }
+          console.log(this.productDetail);
+          // this.defaultParam = this.productDetail.type.find(item => item.def);
+          this.defaultParam = this.productDetail.type[
+            this.productDetail.defaultParam
+          ];
           this.paramsIndex = this.productDetail.defaultParam;
-          // this.defaultParam.color = this.defaultParam.color[0].c;
-          this.$store.dispatch("selectProduct", this.defaultParam);
+          if (!this.selectedParam) {
+            this.selectedParam = {
+              content: this.defaultParam.content,
+              price: this.defaultParam.price,
+              color: this.defaultParam.def,
+              insure: 0,
+              warranty: 0
+            };
+          }
         })
         .catch(err => {
           this.$notify({
@@ -299,6 +383,7 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapActions(["addToCart"]),
     goBack() {
       this.$router.go(-1);
     },
@@ -339,23 +424,89 @@ export default {
         }
       }
     },
+    /**
+     * 选择参数版本
+     */
     selectVersion(index) {
       this.paramsIndex = index;
-      // this.$store.dispatch('selectVersion', index);
+      this.selectProduct();
     },
+    /**
+     * 选择颜色
+     */
     selectColor(index) {
       this.colorIndex = index;
-      // this.$store.dispatch('selectColor', index);
+      this.selectProduct();
+    },
+    /**
+     * 选择意外保护
+     */
+    selectProtect(index) {
+      if (this.protectIndex !== index) {
+        this.protectIndex = index;
+      } else {
+        this.protectIndex = void 0;
+      }
+      this.selectProduct();
+    },
+    /**
+     * 选择延长保修
+     */
+    selectWarranty() {
+      this.hasWarranty = !this.hasWarranty;
+      this.selectProduct();
+    },
+    /**
+     * 合并所有选项
+     */
+    selectProduct() {
+      let arr = this.productDetail.type[this.paramsIndex];
+      this.selectedParam = {
+        content: arr.content,
+        price: arr.price,
+        color: arr.color[this.colorIndex].c
+      };
+
+      if (this.hasWarranty) {
+        Object.assign(this.selectedParam, { warranty: arr.warranty });
+      }
+      if (this.protectIndex !== undefined) {
+        Object.assign(this.selectedParam, {
+          insure: arr.insure[this.protectIndex]
+        });
+      }
     },
     /**
      * 加入购物车
      */
     addToCart() {
+      Object.assign(this.selectedParam, { amount: this.totalNum });
+      if (this.protectIndex === undefined) {
+        delete this.selectedParam["insure"];
+      }
+      if (!this.hasWarranty) {
+        delete this.selectedParam["warranty"];
+      }
       if (!this.isLogined) {
         this.$router.replace({
           path: "/login"
         });
       } else {
+        this.$store
+          .dispatch("addToCart", {
+            userName: this.loginUserName,
+            token: this.loginUserToken,
+            para: this.selectedParam
+          })
+          .then(res => {
+            console.log(res);
+            debugger;
+          })
+          .catch(err => {
+            this.$notify({
+              message: "网络异常!"
+            });
+          });
       }
     }
   }
@@ -664,30 +815,38 @@ export default {
       @extend .e-right-arrow;
     }
   }
+  .popup-wrapper {
+    height: 700px;
+    overflow-y: scroll;
+  }
   .product-popup {
     height: 700px;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     box-sizing: border-box;
     .header {
-      height: 35px;
+      // height: 35px;
+      position: fixed;
+      width: 100%;
+      height: 190px;
+      background-color: #ffffff;
+      z-index: 1;
       .close-btn {
         position: absolute;
         top: 10px;
         right: 20px;
+        z-index: 2;
         display: inline-block;
         width: 25px;
         height: 25px;
         background: url("../assets/img/close.png") no-repeat center center;
         background-size: cover;
       }
-    }
-    .content {
-      padding: 20px;
       .product-title {
         position: relative;
         width: 100%;
         height: 150px;
+        padding: 40px 0 0 40px;
         .product-img {
           display: inline-block;
           width: 130px;
@@ -717,6 +876,11 @@ export default {
           font-size: 25px;
         }
       }
+    }
+    .content {
+      min-height: 65vh;
+      padding: 0 20px 20px;
+      margin-top: 190px;
       .version {
         .version-btn {
           display: flex;
@@ -751,18 +915,108 @@ export default {
           border: 1px solid #ff7600;
         }
       }
+      .amount {
+        position: relative;
+        height: 60px;
+        margin-top: 15px;
+        .title {
+          line-height: 60px;
+        }
+        .stepper {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          display: inline-block;
+          height: 40px;
+          margin: auto;
+          font-size: 0;
+          .control {
+            @extend .e-clear-spacing;
+            width: 40px;
+            height: 40px;
+            font-size: 40px;
+            line-height: 40px;
+            text-align: center;
+            &:not(:disabled) {
+              color: #676767;
+              background-color: #cccccc;
+            }
+            &:disabled {
+              color: #787878;
+              background-color: #f2f2f2;
+            }
+          }
+          .input {
+            @extend .e-clear-spacing;
+            width: 40px;
+            height: 40px;
+            box-sizing: border-box;
+            font-size: 25px;
+            text-align: center;
+            vertical-align: top;
+            border-left: hidden;
+            border-right: hidden;
+            border-top: 1px solid #eeeeee;
+            border-bottom: 1px solid #eeeeee;
+          }
+        }
+      }
+      .protect,
+      .warranty {
+        height: 100px;
+        .p-title {
+          height: 30px;
+          line-height: 30px;
+          i {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: url("../assets/img/question-mark.png") no-repeat center
+              center;
+            background-size: cover;
+          }
+        }
+      }
+      .protect-btn {
+        @extend .e-clear-spacing;
+        padding: 0 10px;
+        width: 45%;
+        height: 40px;
+        background-color: #ffffff;
+        border: 1px solid #aaaaaa;
+        &.active {
+          color: #ff6700;
+          border-color: #ff6700;
+        }
+        &:nth-of-type(2) {
+          margin-left: 5%;
+        }
+        .title {
+          float: left;
+        }
+        .price {
+          float: right;
+        }
+      }
     }
-    .submit-cart {
+
+    .submit-btn-wrapper {
       position: absolute;
       left: 0;
       right: 0;
-      bottom: 20px;
-      margin: auto;
-      width: 70%;
-      height: 60px;
-      color: #ffffff;
-      background-color: #ff6700;
-      border-radius: 30px;
+      bottom: 0;
+      width: 100%;
+      background-color: #ffffff;
+      .submit-cart {
+        display: block;
+        margin: 10px auto;
+        width: 70%;
+        height: 60px;
+        color: #ffffff;
+        background-color: #ff6700;
+        border-radius: 30px;
+      }
     }
   }
 

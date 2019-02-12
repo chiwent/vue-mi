@@ -5,7 +5,8 @@ export const api = {
     orderList: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/orderList',
     cartList: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/cartList',
     product: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/product',
-    like: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/like'
+    like: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/like',
+    addCart: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/addCart'
 }
 
 /**
