@@ -127,6 +127,7 @@
                   :class="{'color-selected': index === colorIndex}"
                   :key="index"
                   @click="selectColor(index)"
+                  :disabled="item.s < 1"
                 >{{ item.c }}</button>
               </div>
               <div class="amount">
@@ -186,7 +187,15 @@
           </div>
         </van-popup>
 
-        <section class="send-to"></section>
+        <section class="send-to" @click="isAreaShow = true">
+          <span class="title">送至</span>
+          <span class="province">{{ address.province }}</span>
+          <span class="area">{{ address.area }}</span>
+          <span class="y-status" v-if="stockStatus">有现货</span>
+          <span class="n-status" v-else>暂无货</span>
+
+          <div class="arrow"></div>
+        </section>
         <section class="rules" @click="isRuleShow = true">
           <div class="rule-item" v-for="(ruleItem, ruleIndex) in rules" :key="ruleIndex">
             <i class="icon"></i>
@@ -272,7 +281,7 @@
 import "swiper/dist/css/swiper.css";
 import { mapActions, mapGetters } from "vuex";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
-import { getProductDetail, getLike } from "@/utils/api";
+import { getProductDetail, getLike, getStock } from "@/utils/api";
 import { addClass, removeClass } from "@/utils/utils";
 export default {
   name: "ProductDetail",
@@ -308,8 +317,14 @@ export default {
           desc: null
         }
       ],
+      address: {
+        province: "北京市",
+        area: "东城区"
+      }, // 选择的地址
+      stockStatus: void 0, // 备货状态
       isProductShow: false, // 是否显示产品选购的popup
       isPromoShow: false, // 是否显示促销的popup
+      isAreaShow: false, // 是否显示地址的popup
       isRuleShow: false, // 是否显示产品服务规则的popup
       isIconActive: false,
       selectImg: void 0, // 选择的产品的图片
@@ -349,6 +364,7 @@ export default {
   },
   created() {
     let productId = this.$route.path.split("/commodity/detail/")[1];
+    // 获取初始化数据
     this.$nextTick(() => {
       getProductDetail(productId)
         .then(res => {
@@ -382,6 +398,8 @@ export default {
             message: "网络异常!"
           });
         });
+
+      this.checkStock();
     });
   },
   mounted() {},
@@ -432,6 +450,9 @@ export default {
      */
     selectVersion(index) {
       this.paramsIndex = index;
+      if (this.colorList[this.paramsIndex].length <= this.colorIndex) {
+        this.colorIndex = 0;
+      }
       this.selectProduct();
     },
     /**
@@ -480,6 +501,24 @@ export default {
       }
     },
     /**
+     * 查看库存
+     */
+    checkStock() {
+      getStock(this.address.province)
+        .then(res => {
+          if (res) {
+            this.stockStatus = true;
+          } else {
+            this.stockStatus = false;
+          }
+        })
+        .catch(err => {
+          this.$notify({
+            message: "网络异常!"
+          });
+        });
+    },
+    /**
      * 加入购物车
      */
     addToCart() {
@@ -503,7 +542,6 @@ export default {
           })
           .then(res => {
             console.log(res);
-            debugger;
           })
           .catch(err => {
             this.$notify({
@@ -516,6 +554,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+$mi-deep-origin: #ff6700;
 .e-clear-spacing {
   margin: 0;
   padding: 0;
@@ -535,6 +574,7 @@ export default {
 }
 .product-container {
   position: relative;
+  min-height: 150vh;
 }
 .top-header {
   position: absolute;
@@ -811,6 +851,9 @@ export default {
       height: 55px;
       line-height: 55px;
     }
+    .title {
+      color: #888888;
+    }
     .detail {
       margin-left: 30px;
     }
@@ -865,7 +908,7 @@ export default {
           .now-price {
             margin-right: 15px;
             font-size: 35px;
-            color: #ff6700;
+            color: $mi-deep-origin;
           }
           .old-price {
             font-size: 20px;
@@ -912,6 +955,10 @@ export default {
           &:not(:first-child) {
             margin-right: 20px;
           }
+        }
+        .color-btn:disabled {
+          color: #aaaaaa;
+          border-color: #f6f6f6;
         }
         .color-selected {
           color: #ff7600;
@@ -989,8 +1036,8 @@ export default {
         background-color: #ffffff;
         border: 1px solid #aaaaaa;
         &.active {
-          color: #ff6700;
-          border-color: #ff6700;
+          color: $mi-deep-origin;
+          border-color: $mi-deep-origin;
         }
         &:nth-of-type(2) {
           margin-left: 5%;
@@ -1017,7 +1064,7 @@ export default {
         width: 70%;
         height: 60px;
         color: #ffffff;
-        background-color: #ff6700;
+        background-color: $mi-deep-origin;
         border-radius: 30px;
       }
     }
@@ -1047,6 +1094,30 @@ export default {
     }
   }
   .rules-popup {
+  }
+
+  .send-to {
+    position: relative;
+    padding: 0 20px;
+    height: 50px;
+    border-bottom: 1px solid #dddddd;
+    span {
+      height: 55px;
+      line-height: 55px;
+    }
+    .title {
+      color: #888888;
+      margin-right: 30px;
+    }
+    .arrow {
+      @extend .e-right-arrow;
+    }
+    .y-status {
+      color: $mi-deep-origin;
+    }
+    .n-status {
+      color: #787878;
+    }
   }
 }
 
@@ -1193,7 +1264,7 @@ export default {
     margin: auto;
     width: 120px;
     height: 60%;
-    background-color: #ff6700;
+    background-color: $mi-deep-origin;
     color: #ffffff;
     border: none;
     border-radius: 30px;

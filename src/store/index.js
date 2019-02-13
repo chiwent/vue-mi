@@ -17,6 +17,11 @@ let initUserTokenInfo = getStorage({
     type: 'session'
 });
 
+let initCartNum = getStorage({
+    name: 'cartNum',
+    type: 'session'
+});
+
 const initUserName = !!initUserInfo ? JSON.parse(JSON.stringify(initUserInfo)).content : '';
 
 const initUserToken = !!initUserTokenInfo ? JSON.parse(JSON.stringify(initUserTokenInfo)).content : '';
@@ -42,15 +47,15 @@ let initProduct, initProductNum;
 
 export default new Vuex.Store({
     state: {
-        status: initStatus,
-        userName: initUserName,
-        token: initUserToken,
+        status: initStatus || false,
+        userName: initUserName || '',
+        token: initUserToken || '',
         /*
         product: initProduct,
         cartNum: initProductNum
         */
-        product: [],
-        cartNum: 0,
+        cartList: [],
+        cartNum: initCartNum || 0,
         addProducts: {}
     },
     mutations: {
@@ -71,30 +76,41 @@ export default new Vuex.Store({
             state.token = '';
         },
         INITCART(state, payload) {
-            state.product = payload;
-            state.cartNum = state.product.reduce((prev, next) => {
+            state.cartList = payload;
+            state.cartNum = state.cartList.reduce((prev, next) => {
                 return prev.num + next.num;
+            });
+            setStorage({
+                name: 'cartNum',
+                content: state.cartNum,
+                type: 'session'
             });
         },
         CLEARCART(state, payload) {
-            state.product = [];
+            state.cartList = [];
             state.cartNum = 0;
+            removeStorage({
+                name: 'cartNum',
+                type: 'session'
+            });
         },
         ADDTOCART(state, payload) {
-            state.product.filter((item, index) => {
+            state.cartList.filter((item, index) => {
                 if (item.productId === payload.productId) {
                     item.num++;
                 } else {
-                    state.product.push(payload)
+                    state.cartList.push(payload)
                 }
             });
-            state.cartNum = state.product.reduce((prev, next) => {
+            state.cartNum = state.cartList.reduce((prev, next) => {
                 return prev.num + next.num;
             });
-        },
-        ADDTOCART(state, payload) {
-            state.addProducts = payload;
-        },
+            setStorage({
+                name: 'cartNum',
+                content: state.cartNum,
+                type: 'session'
+            });
+        }
     },
     actions: {
         login({ commit, state, dispatch }, payload) {
@@ -173,6 +189,10 @@ export default new Vuex.Store({
                     name: 'token',
                     type: 'session'
                 });
+                removeStorage({
+                    name: 'cartNum',
+                    type: 'session'
+                });
                 delete axios.defaults.headers.common['Authorization'];
                 commit('CLEARCART');
                 resolve();
@@ -209,6 +229,7 @@ export default new Vuex.Store({
         loginUserToken: state => state.token,
         isLogined: state => !!state.userName,
         authStatus: state => state.status,
-        cartNumGetters: state => state.cartNum
+        cartNumGetters: state => state.cartNum.content,
+        cartList: state => state.cartList
     }
 });

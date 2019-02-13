@@ -6,7 +6,8 @@ export const api = {
     cartList: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/cartList',
     product: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/product',
     like: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/like',
-    addCart: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/addCart'
+    addCart: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/addCart',
+    stock: 'https://www.easy-mock.com/mock/5c56990f0e8d497fa4bc6646/user/stock'
 }
 
 /**
@@ -29,7 +30,7 @@ export const getOrderList = params => {
             res = res.data.result;
             resolve(res);
         }).catch(err => {
-            reject();
+            reject(err);
         });
     })
 }
@@ -52,7 +53,7 @@ export const getCartList = params => {
             res = res.data.result;
             resolve(res);
         }).catch(err => {
-            reject();
+            reject(err);
         });
     })
 }
@@ -73,7 +74,7 @@ export const getProductDetail = id => {
             res = res.data.result;
             resolve(res);
         }).catch(err => {
-            reject();
+            reject(err);
         });
     });
 }
@@ -97,7 +98,28 @@ export const getLike = params => {
             res = res.data.result;
             resolve(res);
         }).catch(err => {
-            reject();
+            reject(err);
         });
     })
+}
+
+/**
+ * 获取库存状态
+ * @param { Object } province 省份
+ */
+export const getStock = province => {
+    return new Promise((resolve, reject) => {
+        axios({
+            url: api.stock,
+            params: {
+                province: province
+            },
+            method: 'GET'
+        }).then(res => {
+            res = res.data.result;
+            resolve(res);
+        }).catch(err => {
+            reject(err);
+        });
+    });
 }

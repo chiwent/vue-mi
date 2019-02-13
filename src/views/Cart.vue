@@ -6,8 +6,62 @@
     <template v-if="isLogined">
       <template v-if="cartList.length > 0">
         <article class="main-content">
-          <!-- <template> -->
-          <section class="product-item" v-for="(cartItem, cartIndex) in cartList" :key="cartIndex"></section>
+          <!-- <section class="product-item" v-for="(cartItem, cartIndex) in cartList" :key="cartIndex"></section> -->
+          <van-checkbox-group v-model="cartGroup">
+            <van-checkbox v-for="(item, index) in cartList" :key="item" :name="item">
+              <img :src="require('../assets/img/' + item.img)" alt class="good-img">
+              <h3 class="title">{{ item.product }}</h3>
+              <span class="price">售价：{{ item.price }}元</span>
+              <div class="controller">
+                <div class="stepper">
+                  <input
+                    type="button"
+                    value="-"
+                    :disabled="item.num === 1"
+                    class="control"
+                    @click.stop="item.num--"
+                  >
+                  <input type="number" value="1" v-model="item.num" class="input">
+                  <input
+                    type="button"
+                    value="+"
+                    :disabled="item.num >= 10"
+                    class="control"
+                    @click.stop="item.num++"
+                  >
+                </div>
+                <div class="delete-btn">
+                  <i class="del-icon"></i>
+                </div>
+              </div>
+
+              <div class="additional-service">
+                <div class="insure" v-if="item.insure">
+                  <i class="insurance"></i>
+                  <span class="title">意外保护</span>
+                  <span class="price">{{ item.insure }}元起</span>
+                  <span class="select-btn">选购</span>
+                </div>
+                <div class="warranty" v-if="item.warranty">
+                  <i class="insurance"></i>
+                  <span class="title">延长保修服务</span>
+                </div>
+                <div class="bouns" v-if="bouns">
+                  <img :src="require('../assets/img/mifancard-cart.jpg')" alt class="bouns-img">
+                  <div class="title">
+                    <span class="tag">赠品</span>
+                    <span class="word">米粉卡日租卡</span>
+                  </div>
+                  <div class="stepper">
+                    <input type="button" value="-" disabled class="control">
+                    <input type="number" value="1" disabled class="input">
+                    <input type="button" value="+" disabled class="control">
+                  </div>
+                </div>
+              </div>
+            </van-checkbox>
+          </van-checkbox-group>
+
           <!-- </template> -->
         </article>
         <footer class="cart-footer">
@@ -63,32 +117,29 @@ export default {
   },
   data() {
     return {
-      title: "购物车",
-      cartList: []
+      title: "购物车"
     };
   },
   computed: {
-    ...mapGetters(["isLogined"])
+    ...mapGetters(["loginUserName", "loginUserToken", "isLogined", "cartList"])
+  },
+  mounted() {
+    console.log(this.cartList);
   },
   methods: {
-    /**
-     * 获取购物车详情
-     */
-    getList() {
+    checkCart() {
       getCartList({
         userName: this.loginUserName,
         token: this.loginUserToken
       })
         .then(res => {
           if (JSON.stringify(res) !== "{}") {
-            this.cartList = res.cartList;
-          } else {
-            this.cartList = null;
+            this.$store.dispatch("initCart", res.cartList);
           }
         })
         .catch(err => {
           this.$notify({
-            message: "网络异常！"
+            message: "获取购物车信息失败!"
           });
         });
     }
