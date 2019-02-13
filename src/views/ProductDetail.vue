@@ -83,8 +83,12 @@
             <div class="header">
               <span class="close-btn" @click.stop="isProductShow = false"></span>
               <div class="product-title">
-                <img
+                <!-- <img
                   :src="require('../assets/img/' + productDetail.imgs[colorIndex])"
+                  class="product-img"
+                >-->
+                <img
+                  :src="require('../assets/img/' + colorList[paramsIndex][colorIndex].img)"
                   class="product-img"
                 >
                 <div class="price">
@@ -119,7 +123,7 @@
                 <p class="title">颜色</p>
                 <button
                   class="color-btn"
-                  v-for="(item, index) in (paramsIndex !== undefined ? productDetail.type[paramsIndex].color : defaultParam.color)"
+                  v-for="(item, index) in (paramsIndex !== undefined ? colorList[paramsIndex] : defaultParam.color)"
                   :class="{'color-selected': index === colorIndex}"
                   :key="index"
                   @click="selectColor(index)"
@@ -310,6 +314,7 @@ export default {
       isIconActive: false,
       selectImg: void 0, // 选择的产品的图片
       // selectParam: void 0, // 选择的参数配置
+      colorList: [], // 颜色列表
       colorIndex: 0, // 选择的颜色索引
       paramsIndex: void 0, // 选择的版本索引
       protectIndex: void 0, // 选择的意外险
@@ -348,22 +353,20 @@ export default {
       getProductDetail(productId)
         .then(res => {
           this.productDetail = res;
+          this.paramsIndex = this.productDetail.defaultParam;
           this.productDetail.comments.forEach((item, index) => {
             item.likeNew = item.likes;
           });
-          for (let i = 0; i < this.productDetail.type.length; i++) {
-            for (let j = 0; j < this.productDetail.type[i].color.length; j++) {
-              if (this.productDetail.type[i].color[j].t < 1) {
-                this.productDetail.type[i].color[j].splice(colorIndex, 1);
-              }
-            }
-          }
-          console.log(this.productDetail);
+          this.colorList = this.productDetail.type.map(typeItem => {
+            return typeItem.color.filter(colorItem => {
+              return colorItem.t > 0;
+            });
+          });
           // this.defaultParam = this.productDetail.type.find(item => item.def);
           this.defaultParam = this.productDetail.type[
             this.productDetail.defaultParam
           ];
-          this.paramsIndex = this.productDetail.defaultParam;
+
           if (!this.selectedParam) {
             this.selectedParam = {
               content: this.defaultParam.content,
