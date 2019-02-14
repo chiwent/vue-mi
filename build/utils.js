@@ -4,7 +4,7 @@ const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const packageConfig = require('../package.json')
 
-exports.assetsPath = function(_path) {
+exports.assetsPath = function (_path) {
     const assetsSubDirectory = process.env.NODE_ENV === 'production' ?
         config.build.assetsSubDirectory :
         config.dev.assetsSubDirectory
@@ -12,7 +12,7 @@ exports.assetsPath = function(_path) {
     return path.posix.join(assetsSubDirectory, _path)
 }
 
-exports.cssLoaders = function(options) {
+exports.cssLoaders = function (options) {
     options = options || {}
 
     const cssLoader = {
@@ -66,14 +66,19 @@ exports.cssLoaders = function(options) {
         postcss: generateLoaders(),
         less: generateLoaders('less'),
         sass: generateLoaders('sass', { indentedSyntax: true }),
-        scss: generateLoaders('sass'),
+        scss: generateLoaders('sass').concat({
+            loader: 'sass-resources-loader',
+            options: {
+                resources: path.resolve(__dirname, '../src/style/main.scss')
+            }
+        }),
         stylus: generateLoaders('stylus'),
         styl: generateLoaders('stylus')
     }
 }
 
 // Generate loaders for standalone style files (outside of .vue)
-exports.styleLoaders = function(options) {
+exports.styleLoaders = function (options) {
     const output = []
     const loaders = exports.cssLoaders(options)
 
@@ -110,6 +115,6 @@ exports.createNotifierCallback = () => {
 var px2remLoader = {
     loader: 'px2rem-loader',
     options: {
-        remUnit: 16 
+        remUnit: 16
     }
 }

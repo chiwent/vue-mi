@@ -555,23 +555,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 $mi-deep-origin: #ff6700;
-.e-clear-spacing {
-  margin: 0;
-  padding: 0;
-}
-.e-right-arrow {
-  position: absolute;
-  top: 0;
-  right: 20px;
-  bottom: 0;
-  margin: auto;
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid #cccccc;
-  border-top: 2px solid #cccccc;
-  transform: rotate(45deg);
-}
 .product-container {
   position: relative;
   min-height: 150vh;
@@ -677,7 +660,7 @@ $mi-deep-origin: #ff6700;
       height: 30px;
     }
     p {
-      @extend .e-clear-spacing;
+      @extend %e-clear-spacing;
       position: relative;
     }
   }
@@ -719,7 +702,7 @@ $mi-deep-origin: #ff6700;
     }
   }
   .arrow {
-    @extend .e-right-arrow;
+    @extend %e-right-arrow;
   }
 }
 .promo-popup,
@@ -728,7 +711,7 @@ $mi-deep-origin: #ff6700;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   .header {
-    @extend .e-clear-spacing;
+    @extend %e-clear-spacing;
     position: relative;
     height: 50px;
     text-align: center;
@@ -741,7 +724,7 @@ $mi-deep-origin: #ff6700;
       background-color: #cccccc;
     }
     .title {
-      @extend .e-clear-spacing;
+      @extend %e-clear-spacing;
       display: inline-block;
       height: 50px;
       line-height: 50px;
@@ -792,14 +775,14 @@ $mi-deep-origin: #ff6700;
       height: 50px;
       line-height: 50px;
       .title {
-        @extend .e-clear-spacing;
+        @extend %e-clear-spacing;
         line-height: 25px;
         font-size: 25px;
         font-weight: 500;
         vertical-align: middle;
       }
       .desc {
-        @extend .e-clear-spacing;
+        @extend %e-clear-spacing;
         line-height: 25px;
         color: #aaaaaa;
       }
@@ -833,7 +816,7 @@ $mi-deep-origin: #ff6700;
     color: #e7af85;
   }
   .arrow {
-    @extend .e-right-arrow;
+    @extend %e-right-arrow;
   }
 }
 .third-row {
@@ -858,7 +841,7 @@ $mi-deep-origin: #ff6700;
       margin-left: 30px;
     }
     .arrow {
-      @extend .e-right-arrow;
+      @extend %e-right-arrow;
     }
   }
   .popup-wrapper {
@@ -917,7 +900,7 @@ $mi-deep-origin: #ff6700;
           }
         }
         .desc {
-          @extend .e-clear-spacing;
+          @extend %e-clear-spacing;
           margin-top: 15px;
           font-size: 25px;
         }
@@ -973,16 +956,12 @@ $mi-deep-origin: #ff6700;
           line-height: 60px;
         }
         .stepper {
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
           display: inline-block;
           height: 40px;
           margin: auto;
           font-size: 0;
-          .control {
-            @extend .e-clear-spacing;
+          input[type="button"] {
+            @extend %e-clear-spacing;
             width: 40px;
             height: 40px;
             font-size: 40px;
@@ -997,11 +976,12 @@ $mi-deep-origin: #ff6700;
               background-color: #f2f2f2;
             }
           }
-          .input {
-            @extend .e-clear-spacing;
+          input[type="number"] {
+            @extend %e-clear-spacing;
             width: 40px;
             height: 40px;
             box-sizing: border-box;
+            background-color: #ffffff;
             font-size: 25px;
             text-align: center;
             vertical-align: top;
@@ -1029,7 +1009,7 @@ $mi-deep-origin: #ff6700;
         }
       }
       .protect-btn {
-        @extend .e-clear-spacing;
+        @extend %e-clear-spacing;
         padding: 0 10px;
         width: 45%;
         height: 40px;
@@ -1090,7 +1070,7 @@ $mi-deep-origin: #ff6700;
       }
     }
     .arrow {
-      @extend .e-right-arrow;
+      @extend %e-right-arrow;
     }
   }
   .rules-popup {
@@ -1110,7 +1090,7 @@ $mi-deep-origin: #ff6700;
       margin-right: 30px;
     }
     .arrow {
-      @extend .e-right-arrow;
+      @extend %e-right-arrow;
     }
     .y-status {
       color: $mi-deep-origin;
@@ -1171,7 +1151,7 @@ $mi-deep-origin: #ff6700;
       }
     }
     .word {
-      @extend .e-clear-spacing;
+      @extend %e-clear-spacing;
       font-size: 22px;
     }
     .content {
