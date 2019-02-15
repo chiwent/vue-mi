@@ -74,8 +74,8 @@
             <div class="product-row" v-for="(item, index) in cartList" :key="index">
               <div class="main-product">
                 <label class="checkbox-label">
-                  <input type="checkbox" :value="item.product" v-model="selectedItem">
-                  <i class="icon" :class="{'icon-active': selectedItem.indexOf(item.product) > -1}"></i>
+                  <input type="checkbox" :value="item" v-model="selectedItem">
+                  <i class="icon" :class="{'icon-active': selectedItem.indexOf(item) > -1}"></i>
                 </label>
                 <div class="product-wrapper">
                   <img :src="require('../assets/img/' + item.img)" alt class="good-img">
@@ -100,23 +100,37 @@
                           @click.stop="item.num++"
                         >
                       </div>
-                      <div class="delete-btn">
+                      <div class="delete-btn" @click="deleteItem(index)">
                         <i class="del-icon"></i>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="additional-service" v-if="selectedItem.indexOf(item.product) > -1">
+              <div class="additional-service" v-if="selectedItem.indexOf(item) > -1">
                 <div class="insure" v-if="item.insure">
                   <i class="insurance"></i>
                   <span class="title">意外保护</span>
-                  <span class="price">{{ item.insure }}元起</span>
-                  <span class="select-btn">选购</span>
+                  <span class="price">{{ Math.min(...item.insure) }}元起</span>
+                  <!-- <label
+                    class="insure-checkbox"
+                    v-if="insureModel.indexOf(item.insure * item.num) < 0"
+                  >
+                    <input type="checkbox" v-model="insureModel" :value="item.insure * item.num">
+                    <span class="select-btn">选购</span>
+                  </label>
+                  <span class="del-btn" v-else @click="insureModel.splice(index, 1)"></span>-->
+                  <span class="select-btn" @click="isInsurePopup = true">选购</span>
                 </div>
-                <div class="warranty" v-if="item.warranty">
+                <div class="insure" v-if="item.warranty">
                   <i class="insurance"></i>
                   <span class="title">延长保修服务</span>
+                  <span class="price">{{ item.warranty }}元起</span>
+                  <!-- <label class="insure-checkbox">
+                    <input type="checkbox" v-model="warrantyModel" :value="item.warranty">
+                    <span class="select-btn">选购</span>
+                  </label>-->
+                  <span class="select-btn" @click="isInsurePopup = true">选购</span>
                 </div>
                 <div class="bouns" v-if="item.bouns">
                   <img :src="require('../assets/img/mifancard-cart.jpg')" alt class="bouns-img">
@@ -132,9 +146,51 @@
                     </div>
                   </div>
                 </div>
+                <van-popup class="insure-popup" position="bottom" v-model="isInsurePopup">
+                  <div class="header">
+                    <span class="title">购买服务</span>
+                    <i class="close-btn" @click="isInsurePopup = false"></i>
+                  </div>
+                  <div class="row">
+                    <p class="title">
+                      <span class="title-1">意外保护</span>
+                      <span class="title-2"></span>
+                    </p>
+                    <button
+                      class="protect-btn"
+                      v-for="(insureItem, insureIndex) in item.insure"
+                      :class="{'active': item.activeInsure === insureIndex}"
+                      :key="insureIndex"
+                      @click="selectProtect(index, insureIndex)"
+                    >
+                      <span class="title">{{ InsureService[insureIndex] }}</span>
+                      <span class="price">{{ insureItem }}元</span>
+                    </button>
+                  </div>
+                  <div class="row">
+                    <p class="title">
+                      <span class="title-1">延长保修</span>
+                      <span class="title-2"></span>
+                    </p>
+                    <button
+                      class="protect-btn"
+                      :class="{'active': activeWarranty}"
+                      @click.stop="activeWarranty = !activeWarranty"
+                    >
+                      <span class="title">延长保修服务</span>
+                      <span class="price">{{ item.warranty }}元</span>
+                    </button>
+                  </div>
+                  <div class="btn-wrapper">
+                    <div class="half-col summary">已选择 {{ serviceAmount }} 项服务</div>
+                    <div class="half-col btn" @click.stop="submitService">确定</div>
+                  </div>
+                </van-popup>
               </div>
             </div>
           </div>
+          <!-- <p>price: {{ insurePrice }}</p> -->
+          <!-- <p>{{selectedItem}}</p> -->
         </article>
         <footer class="cart-footer">
           <div class="col first-col">
@@ -179,7 +235,7 @@
 <script>
 import StickyHeader from "../components/StickyHeader";
 import { getCartList } from "@/utils/api";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Cart",
   components: {
@@ -187,21 +243,75 @@ export default {
   },
   data() {
     return {
+      isInsurePopup: false,
+      // activeInsure: void 0,
+      activeWarranty: false,
+      InsureService: ["全年意外保障服务", "全年碎屏保障服务"],
       title: "购物车",
       cartGroup: [],
-      selectedItem: [], // 选中的条目
-      totalNum: 0, // 选中的商品总数
-      totalPrice: 0 //  选中商品总金额
+      // insureModel: [],
+      // warrantyModel: [],
+      insurePopup: false,
+      selectedItem: [] // 选中的条目
+      // totalNum: 0 // 选中的商品总数
+      // totalPrice: 0 //  选中商品总金额
     };
   },
   computed: {
-    ...mapGetters(["loginUserName", "loginUserToken", "isLogined", "cartList"])
+    ...mapGetters(["loginUserName", "loginUserToken", "isLogined", "cartList"]),
+    serviceAmount() {
+      let insureStatus = this.cartList.some(item => {
+        return item.activeInsure !== undefined;
+      });
+      return insureStatus + this.activeWarranty;
+    },
+    totalNum() {
+      let amount = 0;
+      if (this.selectedItem.length > 0) {
+        for (let i = 0; i < this.selectedItem.length; i++) {
+          amount += this.selectedItem[i].num;
+        }
+      } else {
+        amount = 0;
+      }
+      return amount;
+    },
+    totalPrice() {
+      let productPrice = 0,
+        insurePrice = 0,
+        warrantyPrice = 0;
+      if (this.selectedItem.length > 0) {
+        for (let i = 0; i < this.selectedItem.length; i++) {
+          productPrice += this.selectedItem[i].price * this.selectedItem[i].num;
+          if (this.selectedItem[i].hasOwnProperty("selectedInsure")) {
+            for (let j = 0; j < this.cartList.length; j++) {
+              if (this.cartList[j].activeInsure === undefined) continue;
+              insurePrice +=
+                this.cartList[j].insure[this.cartList[j].activeInsure] *
+                this.cartList[j].num;
+              if (this.activeWarranty) {
+                warrantyPrice =
+                  this.cartList[j].warranty * this.cartList[j].num;
+              } else {
+                warrantyPrice = 0;
+              }
+            }
+          }
+        }
+      }
+
+      return parseInt(productPrice + insurePrice + warrantyPrice);
+    }
   },
   created() {
-    this.checkCart();
+    // this.checkCart();
   },
   mounted() {},
   methods: {
+    ...mapActions(["deleteCart"]),
+    /**
+     * 获取购物车信息
+     */
     checkCart() {
       getCartList({
         userName: this.loginUserName,
@@ -217,6 +327,32 @@ export default {
             message: "获取购物车信息失败!"
           });
         });
+    },
+    deleteItem(index) {
+      this.$store.dispatch("deleteCart", index);
+    },
+    /**
+     * 选择服务
+     */
+    selectProtect(index, insureIndex) {
+      this.$nextTick(() => {
+        if (
+          this.cartList[index].activeInsure === undefined ||
+          this.cartList[index].activeInsure !== insureIndex
+        ) {
+          this.$set(this.cartList[index], "activeInsure", insureIndex);
+          this.$set(this.selectedItem[index], "selectedInsure", true);
+        } else {
+          this.$delete(this.cartList[index], "activeInsure");
+          this.$delete(this.selectedItem[index], "selectedInsure");
+        }
+      });
+    },
+    /**
+     * 提交服务
+     */
+    submitService() {
+      this.isInsurePopup = false;
     }
   }
 };
@@ -342,7 +478,9 @@ export default {
     .additional-service {
       padding: 15px 10px;
       .insure {
+        position: relative;
         padding: 0 20px;
+        margin-bottom: 20px;
         height: 50px;
         background-color: #f6f6f6;
         .insurance {
@@ -390,6 +528,102 @@ export default {
             .word {
               font-size: 20px;
             }
+          }
+        }
+      }
+      .insure-popup {
+        height: 40%;
+        .header {
+          @extend %e-clear-spacing;
+          position: relative;
+          height: 50px;
+          text-align: center;
+          &::after {
+            content: "";
+            display: block;
+            width: 90%;
+            height: 1.5px;
+            margin: 0 auto;
+            background-color: #cccccc;
+          }
+          .title {
+            @extend %e-clear-spacing;
+            display: inline-block;
+            height: 50px;
+            line-height: 50px;
+            font-size: 30px;
+            font-weight: 500;
+            color: #666666;
+          }
+          .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            background: url("../assets/img/close.png") no-repeat center center;
+            background-size: cover;
+          }
+        }
+        .row {
+          padding: 20px;
+          .title {
+            @extend %e-clear-spacing;
+            margin-bottom: 15px;
+            span {
+              font-size: 23px;
+            }
+          }
+
+          .protect-btn {
+            @extend %e-clear-spacing;
+            padding: 0 10px;
+            width: 45%;
+            height: 40px;
+            background-color: #ffffff;
+            border: 1px solid #aaaaaa;
+            &.active {
+              color: $mi-deep-origin;
+              border-color: $mi-deep-origin;
+            }
+            &:nth-of-type(2) {
+              margin-left: 5%;
+            }
+            span {
+              @extend %e-clear-spacing;
+              height: 40px;
+              line-height: 40px;
+            }
+            .title {
+              float: left;
+            }
+            .price {
+              float: right;
+            }
+          }
+        }
+        .btn-wrapper {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 80px;
+          font-size: 0;
+          .half-col {
+            display: inline-block;
+            width: 50%;
+            height: 80px;
+            line-height: 80px;
+            text-align: center;
+            vertical-align: top;
+          }
+          .summary {
+            font-size: 20px;
+          }
+          .btn {
+            color: #ffffff;
+            background-color: $mi-deep-origin;
+            font-size: 30px;
           }
         }
       }

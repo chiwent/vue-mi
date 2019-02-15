@@ -18,7 +18,7 @@
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
+// import { mapGetters } from "vuex";
 export default {
   name: "StickyFooter",
   props: {
@@ -27,7 +27,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["cartNumGetters"])
+    // ...mapGetters(["cartNumGetters"])
+    cartNumGetters() {
+      return this.$store.state.cartNum;
+    }
   },
   data() {
     return {
@@ -46,11 +49,8 @@ export default {
         "bottom-mine-active.png"
       ]
     };
-  }
-  // mounted() {
-  //   console.log(this.path)
-  //   console.log(window.location.pathname.split('/')[1])
-  // }
+  },
+  mounted() {}
 };
 </script>
 <style lang="scss" scoped>

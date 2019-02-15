@@ -141,24 +141,24 @@ export default {
                   background: "#1eeda1",
                   duration: 2000
                 });
+                getCartList({
+                  userName: this.loginUserName,
+                  token: this.loginUserToken
+                })
+                  .then(res => {
+                    if (JSON.stringify(res) !== "{}") {
+                      this.$store.dispatch("initCart", res.cartList);
+                    }
+                  })
+                  .catch(err => {
+                    this.$notify({
+                      message: "获取购物车信息失败!"
+                    });
+                  });
                 setTimeout(() => {
                   this.$router.push({
                     path: "/"
                   });
-                  getCartList({
-                    userName: this.loginUserName,
-                    token: this.loginUserToken
-                  })
-                    .then(res => {
-                      if (JSON.stringify(res) !== "{}") {
-                        this.$store.dispatch("initCart", res.cartList);
-                      }
-                    })
-                    .catch(err => {
-                      this.$notify({
-                        message: "获取购物车信息失败!"
-                      });
-                    });
                 }, 2000);
               } else {
                 this.$notify({

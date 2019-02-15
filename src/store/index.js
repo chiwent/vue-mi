@@ -22,11 +22,20 @@ let initCartNum = getStorage({
     type: 'session'
 });
 
+let initCartList = getStorage({
+    name: 'cartList',
+    type: 'session'
+});
+
 const initUserName = !!initUserInfo ? JSON.parse(JSON.stringify(initUserInfo)).content : '';
 
 const initUserToken = !!initUserTokenInfo ? JSON.parse(JSON.stringify(initUserTokenInfo)).content : '';
 
 const initStatus = !!initUserName;
+
+const _initCartNum = !!initCartNum ? JSON.parse(JSON.stringify(initCartNum)).content : 0;
+
+const _initCartList = !!initCartList ? JSON.parse(JSON.stringify(initCartList)).content : [];
 
 /*
 let initProduct, initProductNum;
@@ -54,8 +63,8 @@ export default new Vuex.Store({
         product: initProduct,
         cartNum: initProductNum
         */
-        cartList: [],
-        cartNum: initCartNum || 0,
+        cartList: _initCartList,
+        cartNum: _initCartNum,
         addProducts: {}
     },
     mutations: {
@@ -85,12 +94,22 @@ export default new Vuex.Store({
                 content: state.cartNum,
                 type: 'session'
             });
+            setStorage({
+                name: 'cartList',
+                content: state.cartList,
+                type: 'session'
+            });
         },
         CLEARCART(state, payload) {
             state.cartList = [];
             state.cartNum = 0;
             removeStorage({
                 name: 'cartNum',
+                type: 'session'
+            });
+            removeStorage({
+                name: 'cartList',
+                content: state.cartList,
                 type: 'session'
             });
         },
@@ -108,6 +127,25 @@ export default new Vuex.Store({
             setStorage({
                 name: 'cartNum',
                 content: state.cartNum,
+                type: 'session'
+            });
+            setStorage({
+                name: 'cartList',
+                content: state.cartList,
+                type: 'session'
+            });
+        },
+        DELETECART(state, payload) {
+            state.cartNum = state.cartNum - state.cartList[payload].num;
+            state.cartList.splice(payload, 1);
+            setStorage({
+                name: 'cartNum',
+                content: state.cartNum,
+                type: 'session'
+            });
+            setStorage({
+                name: 'cartList',
+                content: state.cartList,
                 type: 'session'
             });
         }
@@ -221,6 +259,11 @@ export default new Vuex.Store({
                     reject(err);
                 });
 
+            });
+        },
+        deleteCart({ commit }, payload) {
+            return new Promise((resolve, reject) => {
+                commit('DELETECART', payload);
             });
         }
     },

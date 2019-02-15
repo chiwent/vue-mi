@@ -162,7 +162,7 @@
                   :key="index"
                   @click="selectProtect(index)"
                 >
-                  <span class="title">全年意外保障服务</span>
+                  <span class="title">{{ insureService[index] }}</span>
                   <span class="price">{{ item }}元</span>
                 </button>
               </div>
@@ -317,6 +317,7 @@ export default {
           desc: null
         }
       ],
+      insureService: ["全年意外保障服务", "全年碎屏保障服务"],
       address: {
         province: "北京市",
         area: "东城区"
