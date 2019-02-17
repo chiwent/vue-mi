@@ -16,7 +16,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 370px;
+  height: 350px;
   .half-col {
     width: 50%;
     height: 100%;

@@ -6,81 +6,22 @@
     <template v-if="isLogined">
       <template v-if="cartList.length > 0">
         <article class="main-content">
-          <!-- <section class="product-item" v-for="(cartItem, cartIndex) in cartList" :key="cartIndex"></section> -->
-          <!-- <van-checkbox-group v-model="cartGroup" class="checkbox-group">
-            <van-checkbox
-              class="checkbox"
-              v-for="(item, index) in cartList"
-              :key="index"
-              :name="item.product"
-            >
-              <div class="content-container">
-                <img :src="require('../assets/img/' + item.img)" alt class="good-img">
-                <div class="content-wrapper">
-                  <h3 class="title">{{ item.product }}</h3>
-                  <span class="price">售价：{{ item.price }}元</span>
-                  <div class="controller">
-                    <div class="stepper">
-                      <input
-                        type="button"
-                        value="-"
-                        :disabled="item.num === 1"
-                        class="control"
-                        @click.stop="item.num--"
-                      >
-                      <input type="number" value="1" v-model="item.num" class="input">
-                      <input
-                        type="button"
-                        value="+"
-                        :disabled="item.num >= 10"
-                        class="control"
-                        @click.stop="item.num++"
-                      >
-                    </div>
-                    <div class="delete-btn">
-                      <i class="del-icon"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="additional-service">
-                <div class="insure" v-if="item.insure">
-                  <i class="insurance"></i>
-                  <span class="title">意外保护</span>
-                  <span class="price">{{ item.insure }}元起</span>
-                  <span class="select-btn">选购</span>
-                </div>
-                <div class="warranty" v-if="item.warranty">
-                  <i class="insurance"></i>
-                  <span class="title">延长保修服务</span>
-                </div>
-                <div class="bouns" v-if="item.bouns">
-                  <img :src="require('../assets/img/mifancard-cart.jpg')" alt class="bouns-img">
-                  <div class="title">
-                    <span class="tag">赠品</span>
-                    <span class="word">米粉卡日租卡</span>
-                  </div>
-                  <div class="stepper">
-                    <input type="button" value="-" disabled class="control">
-                    <input type="number" value="1" disabled class="input">
-                    <input type="button" value="+" disabled class="control">
-                  </div>
-                </div>
-              </div>
-            </van-checkbox>
-          </van-checkbox-group>-->
           <div class="content-container">
             <div class="product-row" v-for="(item, index) in cartList" :key="index">
               <div class="main-product">
                 <label class="checkbox-label">
-                  <input type="checkbox" :value="item" v-model="selectedItem">
-                  <i class="icon" :class="{'icon-active': selectedItem.indexOf(item) > -1}"></i>
+                  <input
+                    type="checkbox"
+                    :value="index"
+                    v-model="selectedItem"
+                    @click.stop="selectProduct(index)"
+                  >
+                  <i class="icon" :class="{'icon-active': selectedItem.indexOf(index) > -1}"></i>
                 </label>
                 <div class="product-wrapper">
                   <img :src="require('../assets/img/' + item.img)" alt class="good-img">
                   <div class="product-detail">
-                    <h3 class="title">{{ item.product }}</h3>
+                    <h3 class="title">{{ item.product }} {{ item.param }}</h3>
                     <span class="price">售价：{{ item.price }}元</span>
                     <div class="controller">
                       <div class="stepper">
@@ -100,36 +41,25 @@
                           @click.stop="item.num++"
                         >
                       </div>
-                      <div class="delete-btn" @click="deleteItem(index)">
+                      <div class="delete-btn" @click="deleteProduct(index)">
                         <i class="del-icon"></i>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="additional-service" v-if="selectedItem.indexOf(item) > -1">
+              <!-- <p>Popup: {{isInsurePopup}}</p> -->
+              <div class="additional-service" v-if="selectedItem.indexOf(index) > -1">
                 <div class="insure" v-if="item.insure">
                   <i class="insurance"></i>
                   <span class="title">意外保护</span>
                   <span class="price">{{ Math.min(...item.insure) }}元起</span>
-                  <!-- <label
-                    class="insure-checkbox"
-                    v-if="insureModel.indexOf(item.insure * item.num) < 0"
-                  >
-                    <input type="checkbox" v-model="insureModel" :value="item.insure * item.num">
-                    <span class="select-btn">选购</span>
-                  </label>
-                  <span class="del-btn" v-else @click="insureModel.splice(index, 1)"></span>-->
                   <span class="select-btn" @click="isInsurePopup = true">选购</span>
                 </div>
                 <div class="insure" v-if="item.warranty">
                   <i class="insurance"></i>
                   <span class="title">延长保修服务</span>
                   <span class="price">{{ item.warranty }}元起</span>
-                  <!-- <label class="insure-checkbox">
-                    <input type="checkbox" v-model="warrantyModel" :value="item.warranty">
-                    <span class="select-btn">选购</span>
-                  </label>-->
                   <span class="select-btn" @click="isInsurePopup = true">选购</span>
                 </div>
                 <div class="bouns" v-if="item.bouns">
@@ -147,48 +77,53 @@
                   </div>
                 </div>
                 <van-popup class="insure-popup" position="bottom" v-model="isInsurePopup">
-                  <div class="header">
-                    <span class="title">购买服务</span>
-                    <i class="close-btn" @click="isInsurePopup = false"></i>
-                  </div>
-                  <div class="row">
-                    <p class="title">
-                      <span class="title-1">意外保护</span>
-                      <span class="title-2"></span>
-                    </p>
-                    <button
-                      class="protect-btn"
-                      v-for="(insureItem, insureIndex) in item.insure"
-                      :class="{'active': item.activeInsure === insureIndex}"
-                      :key="insureIndex"
-                      @click="selectProtect(index, insureIndex)"
-                    >
-                      <span class="title">{{ InsureService[insureIndex] }}</span>
-                      <span class="price">{{ insureItem }}元</span>
-                    </button>
-                  </div>
-                  <div class="row">
-                    <p class="title">
-                      <span class="title-1">延长保修</span>
-                      <span class="title-2"></span>
-                    </p>
-                    <button
-                      class="protect-btn"
-                      :class="{'active': activeWarranty}"
-                      @click.stop="activeWarranty = !activeWarranty"
-                    >
-                      <span class="title">延长保修服务</span>
-                      <span class="price">{{ item.warranty }}元</span>
-                    </button>
-                  </div>
-                  <div class="btn-wrapper">
-                    <div class="half-col summary">已选择 {{ serviceAmount }} 项服务</div>
-                    <div class="half-col btn" @click.stop="submitService">确定</div>
+                  <div v-if="isInsurePopup">
+                    <div class="header">
+                      <span class="title">购买服务</span>
+                      <i class="close-btn" @click="isInsurePopup = false"></i>
+                    </div>
+                    <div class="row">
+                      <p class="title">
+                        <span class="title-1">意外保护</span>
+                        <span class="title-2"></span>
+                      </p>
+                      <button
+                        class="protect-btn"
+                        v-for="(insureItem, insureIndex) in item.insure"
+                        :class="{'active': item.selectedInsure === insureIndex}"
+                        :key="insureIndex"
+                        @click="selectInsure(index, insureIndex)"
+                      >
+                        <span class="title">{{ InsureService[insureIndex] }}</span>
+                        <span class="price">{{ insureItem }}元</span>
+                      </button>
+                    </div>
+                    <div class="row">
+                      <p class="title">
+                        <span class="title-1">延长保修</span>
+                        <span class="title-2"></span>
+                      </p>
+                      <button
+                        class="protect-btn"
+                        :class="{'active': item.selectedWarranty}"
+                        @click="selectWarranty(index)"
+                      >
+                        <span class="title">延长保修服务</span>
+                        <span class="price">{{ item.warranty }}元</span>
+                      </button>
+                    </div>
+                    <div class="btn-wrapper">
+                      <div
+                        class="half-col summary"
+                      >已选择 {{ !!item.selectedInsure + !!item.selectedWarranty }} 项服务</div>
+                      <div class="half-col btn" @click.stop="submitService">确定</div>
+                    </div>
                   </div>
                 </van-popup>
               </div>
             </div>
           </div>
+
           <!-- <p>price: {{ insurePrice }}</p> -->
           <!-- <p>{{selectedItem}}</p> -->
         </article>
@@ -244,7 +179,7 @@ export default {
   data() {
     return {
       isInsurePopup: false,
-      // activeInsure: void 0,
+      // selectedInsure: void 0,
       activeWarranty: false,
       InsureService: ["全年意外保障服务", "全年碎屏保障服务"],
       title: "购物车",
@@ -259,44 +194,36 @@ export default {
   },
   computed: {
     ...mapGetters(["loginUserName", "loginUserToken", "isLogined", "cartList"]),
-    serviceAmount() {
-      let insureStatus = this.cartList.some(item => {
-        return item.activeInsure !== undefined;
-      });
-      return insureStatus + this.activeWarranty;
-    },
+    /**
+     * 选择的商品数目
+     */
     totalNum() {
       let amount = 0;
-      if (this.selectedItem.length > 0) {
-        for (let i = 0; i < this.selectedItem.length; i++) {
-          amount += this.selectedItem[i].num;
-        }
-      } else {
-        amount = 0;
+      for (let i = 0, len = this.selectedItem.length; i < len; i++) {
+        let _index = this.selectedItem[i];
+        amount += this.cartList[_index].num;
       }
       return amount;
     },
+    /**
+     * 总金额
+     */
     totalPrice() {
       let productPrice = 0,
         insurePrice = 0,
         warrantyPrice = 0;
-      if (this.selectedItem.length > 0) {
-        for (let i = 0; i < this.selectedItem.length; i++) {
-          productPrice += this.selectedItem[i].price * this.selectedItem[i].num;
-          if (this.selectedItem[i].hasOwnProperty("selectedInsure")) {
-            for (let j = 0; j < this.cartList.length; j++) {
-              if (this.cartList[j].activeInsure === undefined) continue;
-              insurePrice +=
-                this.cartList[j].insure[this.cartList[j].activeInsure] *
-                this.cartList[j].num;
-              if (this.activeWarranty) {
-                warrantyPrice =
-                  this.cartList[j].warranty * this.cartList[j].num;
-              } else {
-                warrantyPrice = 0;
-              }
-            }
-          }
+      for (let i = 0; i < this.selectedItem.length; i++) {
+        let _index = this.selectedItem[i];
+        productPrice += this.cartList[_index].price * this.cartList[_index].num;
+        if (this.cartList[_index].selectedInsure !== undefined) {
+          let _insureIndex = this.cartList[_index].selectedInsure;
+          insurePrice +=
+            this.cartList[_index].insure[_insureIndex] *
+            this.cartList[_index].num;
+        }
+        if (this.cartList[_index].selectedWarranty !== undefined) {
+          warrantyPrice +=
+            this.cartList[_index].warranty * this.cartList[_index].num;
         }
       }
 
@@ -328,23 +255,47 @@ export default {
           });
         });
     },
-    deleteItem(index) {
-      this.$store.dispatch("deleteCart", index);
+    /**
+     * 反选产品，如果取消选择商品，要清除对应的服务费用
+     */
+    selectProduct(index) {
+      if (this.selectedItem.indexOf(index) < 0) {
+        this.$delete(this.cartList[index], "selectedInsure");
+        this.$delete(this.cartList[index], "selectedWarranty");
+      }
     },
     /**
-     * 选择服务
+     * 删除产品
      */
-    selectProtect(index, insureIndex) {
+    deleteProduct(index) {
+      this.$store.dispatch("deleteCart", index);
+      this.$delete(this.cartList[index], "selectedInsure");
+      this.$delete(this.cartList[index], "selectedWarranty");
+    },
+    /**
+     * 选择意外保护服务
+     */
+    selectInsure(index, insureIndex) {
       this.$nextTick(() => {
         if (
-          this.cartList[index].activeInsure === undefined ||
-          this.cartList[index].activeInsure !== insureIndex
+          this.cartList[index].selectedInsure === undefined ||
+          this.cartList[index].selectedInsure !== insureIndex
         ) {
-          this.$set(this.cartList[index], "activeInsure", insureIndex);
-          this.$set(this.selectedItem[index], "selectedInsure", true);
+          this.$set(this.cartList[index], "selectedInsure", insureIndex);
         } else {
-          this.$delete(this.cartList[index], "activeInsure");
-          this.$delete(this.selectedItem[index], "selectedInsure");
+          this.$delete(this.cartList[index], "selectedInsure");
+        }
+      });
+    },
+    /**
+     * 选择延长保修服务
+     */
+    selectWarranty(index) {
+      this.$nextTick(() => {
+        if (this.cartList[index].selectedWarranty === undefined) {
+          this.$set(this.cartList[index], "selectedWarranty", true);
+        } else {
+          this.$delete(this.cartList[index], "selectedWarranty");
         }
       });
     },
@@ -694,6 +645,7 @@ export default {
   bottom: 0;
   width: 100%;
   height: 70px;
+  background-color: #ffffff;
   font-size: 0;
   p {
     @extend %e-clear-spacing;
@@ -713,7 +665,7 @@ export default {
       font-size: 20px;
     }
     .desc {
-      margin-bottom: 10px;
+      margin-top: 10px;
     }
     .price span {
       padding-right: 10px;

@@ -24,18 +24,18 @@
       </ul>
     </div>
     <two-columns>
-      <div slot="left" class="half-col">
+      <div slot="left" class="half-col half">
         <router-link to="/commodity/detail/mi8s" id="mi8s">
           <img :src="require('../assets/img/mi8s.jpg')" alt="mi8s" class="col-img">
         </router-link>
       </div>
-      <div slot="right" class="half-col">
-        <div>
-          <router-link to="/zhineng" id="zhineng">
+      <div slot="right" class="half-col half">
+        <div class="col-right">
+          <router-link to="/zhineng">
             <img :src="require('../assets/img/zhineng.jpg')" alt="zhineng">
           </router-link>
         </div>
-        <div>
+        <div class="col-right">
           <router-link to="/tvsale">
             <img :src="require('../assets/img/double11-tv.jpg')" alt="double11-tv">
           </router-link>
@@ -58,7 +58,7 @@
     </one-column>
     <two-columns>
       <div class="half-col" slot="left">
-        <router-link to="/commodity/detail/mi8s">
+        <router-link to="/commodity/detail/mi8s" class="product-img">
           <img :src="require('../assets/img/mi8s-l.jpg')" alt="mi8s-l">
         </router-link>
         <p class="col-title">小米8 青春版</p>
@@ -66,7 +66,7 @@
         <p class="col-price">￥1399起</p>
       </div>
       <div class="half-col" slot="right">
-        <router-link to="/commodity/detail/mi8new">
+        <router-link to="/commodity/detail/mi8new" class="product-img">
           <img :src="require('../assets/img/mi8finger.jpg')" alt="mi8finger">
         </router-link>
         <p class="col-title">小米8 屏幕指纹版</p>
@@ -76,7 +76,7 @@
     </two-columns>
     <two-columns>
       <div class="half-col" slot="left">
-        <router-link to="/commodity/detail/redmi6a">
+        <router-link to="/commodity/detail/redmi6a" class="product-img">
           <img :src="require('../assets/img/redmi6a.jpg')" alt="redmi6a">
         </router-link>
         <p class="col-title">红米6A</p>
@@ -87,7 +87,7 @@
         </p>
       </div>
       <div class="half-col" slot="right">
-        <router-link to="/commodity/detail/mi6x">
+        <router-link to="/commodity/detail/mi6x" class="product-img">
           <img :src="require('../assets/img/mi6x.jpg')" alt="mi6x">
         </router-link>
         <p class="col-title">小米6X</p>
@@ -100,7 +100,7 @@
     </two-columns>
     <two-columns>
       <div class="half-col" slot="left">
-        <router-link to="/commodity/detail/mi8se">
+        <router-link to="/commodity/detail/mi8se" class="product-img">
           <img :src="require('../assets/img/mi8se.jpg')" alt="mi8se">
         </router-link>
         <p class="col-title">小米8 SE</p>
@@ -111,7 +111,7 @@
         </p>
       </div>
       <div class="half-col" slot="right">
-        <router-link to="/commodity/detail/mipad4">
+        <router-link to="/commodity/detail/mipad4" class="product-img">
           <img :src="require('../assets/img/mipad4.jpg')" alt="mipad4">
         </router-link>
         <p class="col-title">小米平板4</p>
@@ -121,7 +121,7 @@
     </two-columns>
     <two-columns>
       <div class="half-col" slot="left">
-        <router-link to="/helo">
+        <router-link to="/helo" class="product-img">
           <img :src="require('../assets/img/helo.jpg')" alt="helo">
         </router-link>
         <p class="col-title">黑鲨游戏手机Helo</p>
@@ -129,7 +129,7 @@
         <p class="col-price">￥3199起</p>
       </div>
       <div class="half-col" slot="right">
-        <router-link to="/commodity/detail/redmi6">
+        <router-link to="/commodity/detail/redmi6" class="product-img">
           <img :src="require('../assets/img/redmi6-s.jpg')" alt="redmi6">
         </router-link>
         <p class="col-title">红米6</p>
@@ -191,15 +191,14 @@ export default {
 $half-width: 50%;
 $max-width: 100%;
 .swiper {
-  margin: 0 auto;
   position: relative;
   z-index: 1;
-  height: 205px;
+  margin: 0 auto;
+  height: 270px;
   box-sizing: content-box;
-  margin-top: 50px;
   .banner {
     width: 100%;
-    height: 100%;
+    height: 270px;
   }
 }
 
@@ -207,7 +206,6 @@ $max-width: 100%;
   position: relative;
   width: 100%;
   height: 100px;
-  margin-top: 40px;
   ul {
     width: 100%;
     height: 100px;
@@ -229,9 +227,9 @@ $max-width: 100%;
 }
 
 .half-col {
-  width: $half-width;
-  height: 290px;
   display: inline-block;
+  // width: $half-width;
+  font-size: 0;
   img {
     display: inline-block;
     width: $max-width;
@@ -239,6 +237,22 @@ $max-width: 100%;
   p {
     padding-left: 20px;
     margin-top: 5px;
+  }
+  .product-img {
+    img {
+      height: 70%;
+    }
+  }
+}
+.half {
+  .col-img {
+    height: 100%;
+  }
+  .col-right {
+    height: 50%;
+    img {
+      height: 100%;
+    }
   }
 }
 

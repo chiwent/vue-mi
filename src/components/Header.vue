@@ -94,19 +94,16 @@ export default {
     select(e, index) {
       let target = e.currentTarget;
       let targetNode, targetClass;
-      // console.log('refs:',this.$refs.navlist)
       if (target.className.split(/\s+/g).indexOf("extra-btn") !== -1) {
         targetNode = this.$refs.btnlist.childNodes;
         targetClass = "tag-active";
         this.navBak = index;
         this.$emit("listenNav", this.navBak);
-        // console.log('nav:', this.navBak)
       } else if (target.className.split(/\s+/g).indexOf("nav-btn") !== -1) {
         targetNode = this.$refs.navlist.childNodes;
         targetClass = "nav-active";
         this.navBak = index;
         this.$emit("listenNav", this.navBak);
-        // console.log('nav:', this.navBak)
       }
       Array.prototype.forEach.call(targetNode, (item, index) => {
         item.classList.remove(targetClass);
@@ -170,10 +167,11 @@ export default {
 }
 .app-view-wrapper {
   width: 100%;
+  height: 120px;
   font-size: 26px;
   position: relative;
   margin: 0 auto;
-  padding-bottom: 52px;
+  // padding-bottom: 52px;
   color: #3c3c3c;
   background-color: #fff;
   .container {
