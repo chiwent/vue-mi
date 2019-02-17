@@ -5,12 +5,13 @@
 # 用vue2写的小米商城
 ![demo1](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/vue-mi-demo.png)
 <br>
+
+![demo-gif-1](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/demo.gif)
+<br>
 对比原版：<br>
 [原版](https://m.mi.com/)
 <br>
 
-![demo-gif-1](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/demo.gif)
-<br>
 将项目clone到本地后，npm run dev，调整到移动调试模式查看<br>
 
 

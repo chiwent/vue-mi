@@ -48,20 +48,62 @@
                   </div>
                 </div>
               </div>
-              <!-- <p>Popup: {{isInsurePopup}}</p> -->
               <div class="additional-service" v-if="selectedItem.indexOf(index) > -1">
-                <div class="insure" v-if="item.insure">
+                <!-- 意外保护 - 选购 -->
+                <div class="insure" v-if="item.insure && insureNum === 0">
                   <i class="insurance"></i>
                   <span class="title">意外保护</span>
                   <span class="price">{{ Math.min(...item.insure) }}元起</span>
-                  <span class="select-btn" @click="isInsurePopup = true">选购</span>
+                  <span class="select-btn" @click.stop="showPopup(index)">选购</span>
                 </div>
-                <div class="insure" v-if="item.warranty">
+                <!-- 延长保修服务 - 选购 -->
+                <div class="insure" v-if="item.warranty && warrantyNum === 0">
                   <i class="insurance"></i>
                   <span class="title">延长保修服务</span>
                   <span class="price">{{ item.warranty }}元起</span>
-                  <span class="select-btn" @click="isInsurePopup = true">选购</span>
+                  <span class="select-btn" @click.stop="showPopup(index)">选购</span>
                 </div>
+
+                <!-- 选中的意外服务 -->
+                <div class="selected-service" v-if="insureNum > 0">
+                  <img :src="require('../assets/img/insure.jpg')" alt class="bouns-img">
+                  <div class="controller">
+                    <div class="desc">
+                      <p>
+                        <span
+                          class="title"
+                        >{{ item.product }} {{ InsureService[item.selectedInsure] }}</span>
+                        <span class="re-select" @click.stop="isInsurePopup = true">重选</span>
+                      </p>
+                      <p class="price">售价：{{ item.insure[item.selectedInsure] }}元</p>
+                    </div>
+                    <div class="stepper">
+                      <input type="button" value="-" disabled class="control">
+                      <input type="number" value="1" disabled class="input">
+                      <input type="button" value="+" disabled class="control">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 选中的延长保修服务 -->
+                <div class="selected-service" v-if="warrantyNum > 0">
+                  <img :src="require('../assets/img/insure.jpg')" alt class="bouns-img">
+                  <div class="controller">
+                    <div class="desc">
+                      <p>
+                        <span class="title">{{ item.product }} 延长保修服务</span>
+                        <span class="re-select" @click.stop="isInsurePopup = true">重选</span>
+                      </p>
+                      <p class="price">售价：{{ item.warranty }}元</p>
+                    </div>
+                    <div class="stepper">
+                      <input type="button" value="-" disabled class="control">
+                      <input type="number" value="1" disabled class="input">
+                      <input type="button" value="+" disabled class="control">
+                    </div>
+                  </div>
+                </div>
+
                 <div class="bouns" v-if="item.bouns">
                   <img :src="require('../assets/img/mifancard-cart.jpg')" alt class="bouns-img">
                   <div class="controller">
@@ -76,54 +118,54 @@
                     </div>
                   </div>
                 </div>
-                <van-popup class="insure-popup" position="bottom" v-model="isInsurePopup">
-                  <div v-if="isInsurePopup">
-                    <div class="header">
-                      <span class="title">购买服务</span>
-                      <i class="close-btn" @click="isInsurePopup = false"></i>
-                    </div>
-                    <div class="row">
-                      <p class="title">
-                        <span class="title-1">意外保护</span>
-                        <span class="title-2"></span>
-                      </p>
-                      <button
-                        class="protect-btn"
-                        v-for="(insureItem, insureIndex) in item.insure"
-                        :class="{'active': item.selectedInsure === insureIndex}"
-                        :key="insureIndex"
-                        @click="selectInsure(index, insureIndex)"
-                      >
-                        <span class="title">{{ InsureService[insureIndex] }}</span>
-                        <span class="price">{{ insureItem }}元</span>
-                      </button>
-                    </div>
-                    <div class="row">
-                      <p class="title">
-                        <span class="title-1">延长保修</span>
-                        <span class="title-2"></span>
-                      </p>
-                      <button
-                        class="protect-btn"
-                        :class="{'active': item.selectedWarranty}"
-                        @click="selectWarranty(index)"
-                      >
-                        <span class="title">延长保修服务</span>
-                        <span class="price">{{ item.warranty }}元</span>
-                      </button>
-                    </div>
-                    <div class="btn-wrapper">
-                      <div
-                        class="half-col summary"
-                      >已选择 {{ !!item.selectedInsure + !!item.selectedWarranty }} 项服务</div>
-                      <div class="half-col btn" @click.stop="submitService">确定</div>
-                    </div>
-                  </div>
-                </van-popup>
               </div>
+              <van-popup
+                class="insure-popup"
+                position="bottom"
+                v-model="isInsurePopup"
+                v-if="isInsurePopup"
+              >
+                <div class="header">
+                  <span class="title">购买服务</span>
+                  <i class="close-btn" @click="isInsurePopup = false"></i>
+                </div>
+                <div class="row">
+                  <p class="title">
+                    <span class="title-1">意外保护</span>
+                    <span class="title-2"></span>
+                  </p>
+                  <button
+                    class="protect-btn"
+                    v-for="(insureItem, insureIndex) in cartList[serviceIndex].insure"
+                    :class="{'active': cartList[serviceIndex].selectedInsure === insureIndex}"
+                    :key="insureIndex"
+                    @click="selectInsure(serviceIndex, insureIndex)"
+                  >
+                    <span class="title">{{ InsureService[insureIndex] }}</span>
+                    <span class="price">{{ insureItem }}元</span>
+                  </button>
+                </div>
+                <div class="row">
+                  <p class="title">
+                    <span class="title-1">延长保修</span>
+                    <span class="title-2"></span>
+                  </p>
+                  <button
+                    class="protect-btn"
+                    :class="{'active': cartList[serviceIndex].selectedWarranty}"
+                    @click="selectWarranty(serviceIndex)"
+                  >
+                    <span class="title">延长保修服务</span>
+                    <span class="price">{{ cartList[serviceIndex].warranty }}元</span>
+                  </button>
+                </div>
+                <div class="btn-wrapper">
+                  <div class="half-col summary">已选择 {{ insureNum + warrantyNum}} 项服务</div>
+                  <div class="half-col btn" @click.stop="submitService">确定</div>
+                </div>
+              </van-popup>
             </div>
           </div>
-
           <!-- <p>price: {{ insurePrice }}</p> -->
           <!-- <p>{{selectedItem}}</p> -->
         </article>
@@ -179,17 +221,14 @@ export default {
   data() {
     return {
       isInsurePopup: false,
+      serviceIndex: void 0,
       // selectedInsure: void 0,
       activeWarranty: false,
       InsureService: ["全年意外保障服务", "全年碎屏保障服务"],
       title: "购物车",
       cartGroup: [],
-      // insureModel: [],
-      // warrantyModel: [],
       insurePopup: false,
       selectedItem: [] // 选中的条目
-      // totalNum: 0 // 选中的商品总数
-      // totalPrice: 0 //  选中商品总金额
     };
   },
   computed: {
@@ -204,6 +243,32 @@ export default {
         amount += this.cartList[_index].num;
       }
       return amount;
+    },
+    /**
+     * 选中的意外服务数
+     */
+    insureNum() {
+      if (this.serviceIndex !== undefined) {
+        let _num =
+          this.cartList[this.serviceIndex].selectedInsure !== undefined ? 1 : 0;
+        return _num;
+      } else {
+        return 0;
+      }
+    },
+    /**
+     * 选中的延长保修数
+     */
+    warrantyNum() {
+      if (this.serviceIndex !== undefined) {
+        let _num =
+          this.cartList[this.serviceIndex].selectedWarranty !== undefined
+            ? 1
+            : 0;
+        return _num;
+      } else {
+        return 0;
+      }
     },
     /**
      * 总金额
@@ -254,6 +319,10 @@ export default {
             message: "获取购物车信息失败!"
           });
         });
+    },
+    showPopup(index) {
+      this.isInsurePopup = true;
+      this.serviceIndex = index;
     },
     /**
      * 反选产品，如果取消选择商品，要清除对应的服务费用
@@ -453,7 +522,8 @@ export default {
           color: $mi-deep-origin;
         }
       }
-      .bouns {
+      .bouns,
+      .selected-service {
         position: relative;
         .bouns-img {
           width: 140px;
@@ -466,7 +536,28 @@ export default {
           transform: translateY(-50%);
           margin: auto;
           display: inline-block;
-          .title {
+          min-width: 300px;
+          p {
+            @extend %e-clear-spacing;
+          }
+          div.desc {
+            width: 100%;
+          }
+          span.title {
+            font-size: 23px;
+            color: #666666;
+          }
+          span.re-select {
+            float: right;
+            font-size: 23px;
+            color: #888888;
+          }
+          p.price {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #999999;
+          }
+          div.title {
             height: 30px;
             line-height: 30px;
             margin-bottom: 10px;
@@ -482,100 +573,100 @@ export default {
           }
         }
       }
-      .insure-popup {
-        height: 40%;
-        .header {
+    }
+    .insure-popup {
+      height: 40%;
+      .header {
+        @extend %e-clear-spacing;
+        position: relative;
+        height: 50px;
+        text-align: center;
+        &::after {
+          content: "";
+          display: block;
+          width: 90%;
+          height: 1.5px;
+          margin: 0 auto;
+          background-color: #cccccc;
+        }
+        .title {
           @extend %e-clear-spacing;
-          position: relative;
+          display: inline-block;
           height: 50px;
-          text-align: center;
-          &::after {
-            content: "";
-            display: block;
-            width: 90%;
-            height: 1.5px;
-            margin: 0 auto;
-            background-color: #cccccc;
-          }
-          .title {
-            @extend %e-clear-spacing;
-            display: inline-block;
-            height: 50px;
-            line-height: 50px;
-            font-size: 30px;
-            font-weight: 500;
-            color: #666666;
-          }
-          .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            display: inline-block;
-            width: 25px;
-            height: 25px;
-            background: url("../assets/img/close.png") no-repeat center center;
-            background-size: cover;
-          }
+          line-height: 50px;
+          font-size: 30px;
+          font-weight: 500;
+          color: #666666;
         }
-        .row {
-          padding: 20px;
-          .title {
-            @extend %e-clear-spacing;
-            margin-bottom: 15px;
-            span {
-              font-size: 23px;
-            }
-          }
-
-          .protect-btn {
-            @extend %e-clear-spacing;
-            padding: 0 10px;
-            width: 45%;
-            height: 40px;
-            background-color: #ffffff;
-            border: 1px solid #aaaaaa;
-            &.active {
-              color: $mi-deep-origin;
-              border-color: $mi-deep-origin;
-            }
-            &:nth-of-type(2) {
-              margin-left: 5%;
-            }
-            span {
-              @extend %e-clear-spacing;
-              height: 40px;
-              line-height: 40px;
-            }
-            .title {
-              float: left;
-            }
-            .price {
-              float: right;
-            }
-          }
-        }
-        .btn-wrapper {
+        .close-btn {
           position: absolute;
-          bottom: 0;
-          width: 100%;
+          top: 10px;
+          right: 20px;
+          display: inline-block;
+          width: 25px;
+          height: 25px;
+          background: url("../assets/img/close.png") no-repeat center center;
+          background-size: cover;
+        }
+      }
+      .row {
+        padding: 20px;
+        .title {
+          @extend %e-clear-spacing;
+          margin-bottom: 15px;
+          span {
+            font-size: 23px;
+          }
+        }
+
+        .protect-btn {
+          @extend %e-clear-spacing;
+          padding: 0 10px;
+          width: 45%;
+          height: 40px;
+          background-color: #ffffff;
+          border: 1px solid #aaaaaa;
+          &.active {
+            color: $mi-deep-origin;
+            border-color: $mi-deep-origin;
+          }
+          &:nth-of-type(2) {
+            margin-left: 5%;
+          }
+          span {
+            @extend %e-clear-spacing;
+            height: 40px;
+            line-height: 40px;
+          }
+          .title {
+            float: left;
+          }
+          .price {
+            float: right;
+          }
+        }
+      }
+      .btn-wrapper {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 80px;
+        font-size: 0;
+        .half-col {
+          display: inline-block;
+          width: 50%;
           height: 80px;
-          font-size: 0;
-          .half-col {
-            display: inline-block;
-            width: 50%;
-            height: 80px;
-            line-height: 80px;
-            text-align: center;
-            vertical-align: top;
-          }
-          .summary {
-            font-size: 20px;
-          }
-          .btn {
-            color: #ffffff;
-            background-color: $mi-deep-origin;
-            font-size: 30px;
-          }
+          line-height: 80px;
+          text-align: center;
+          vertical-align: top;
+        }
+        .summary {
+          font-size: 20px;
+        }
+        .btn {
+          color: #ffffff;
+          background-color: $mi-deep-origin;
+          font-size: 30px;
         }
       }
     }
