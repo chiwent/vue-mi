@@ -72,6 +72,7 @@ export default {
 //   overflow: hidden;
 // }
 .child-view {
+  position: relative;
   width: 100%;
   transition: all 0.2s linear;
 }

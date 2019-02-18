@@ -50,14 +50,20 @@
               </div>
               <div class="additional-service" v-if="selectedItem.indexOf(index) > -1">
                 <!-- 意外保护 - 选购 -->
-                <div class="insure" v-if="item.insure && insureNum === 0">
+                <div
+                  class="insure"
+                  v-if="item.insure && cartList[index].selectedInsure === undefined"
+                >
                   <i class="insurance"></i>
                   <span class="title">意外保护</span>
                   <span class="price">{{ Math.min(...item.insure) }}元起</span>
                   <span class="select-btn" @click.stop="showPopup(index)">选购</span>
                 </div>
                 <!-- 延长保修服务 - 选购 -->
-                <div class="insure" v-if="item.warranty && warrantyNum === 0">
+                <div
+                  class="insure"
+                  v-if="item.warranty && cartList[index].selectWarranty === undefined"
+                >
                   <i class="insurance"></i>
                   <span class="title">延长保修服务</span>
                   <span class="price">{{ item.warranty }}元起</span>
@@ -65,7 +71,7 @@
                 </div>
 
                 <!-- 选中的意外服务 -->
-                <div class="selected-service" v-if="insureNum > 0">
+                <div class="selected-service" v-if="cartList[index].selectedInsure !== undefined">
                   <img :src="require('../assets/img/insure.jpg')" alt class="bouns-img">
                   <div class="controller">
                     <div class="desc">
@@ -73,7 +79,7 @@
                         <span
                           class="title"
                         >{{ item.product }} {{ InsureService[item.selectedInsure] }}</span>
-                        <span class="re-select" @click.stop="isInsurePopup = true">重选</span>
+                        <span class="re-select" @click.stop="showPopup(index)">重选</span>
                       </p>
                       <p class="price">售价：{{ item.insure[item.selectedInsure] }}元</p>
                     </div>
@@ -86,13 +92,13 @@
                 </div>
 
                 <!-- 选中的延长保修服务 -->
-                <div class="selected-service" v-if="warrantyNum > 0">
+                <div class="selected-service" v-if="cartList[index].selectWarranty !== undefined">
                   <img :src="require('../assets/img/insure.jpg')" alt class="bouns-img">
                   <div class="controller">
                     <div class="desc">
                       <p>
                         <span class="title">{{ item.product }} 延长保修服务</span>
-                        <span class="re-select" @click.stop="isInsurePopup = true">重选</span>
+                        <span class="re-select" @click.stop="showPopup(index)">重选</span>
                       </p>
                       <p class="price">售价：{{ item.warranty }}元</p>
                     </div>
@@ -337,9 +343,13 @@ export default {
      * 删除产品
      */
     deleteProduct(index) {
-      this.$store.dispatch("deleteCart", index);
+      let _index = this.selectedItem.indexOf(index);
+      if (_index !== -1) {
+        this.selectedItem.splice(_index, 1);
+      }
       this.$delete(this.cartList[index], "selectedInsure");
       this.$delete(this.cartList[index], "selectedWarranty");
+      this.$store.dispatch("deleteCart", index);
     },
     /**
      * 选择意外保护服务
