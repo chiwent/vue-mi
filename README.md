@@ -4,11 +4,24 @@
 
 # 用vue2写的小米商城
 ![demo1](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/vue-mi-demo.png)
-<br>
+
+![dmeo2](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/user-page.PNG)
+
+![demo3](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/product-detail.PNG)
+
+![demo4](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/order-list.PNG)
+
+![demo5](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/categories.PNG)
+
+![demo6](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/cart.PNG)
 
 ![demo-gif-1](https://raw.githubusercontent.com/chiwent/vue-mi/master/demo/demo.gif)
 <br>
+
+......<br>
+
 对比原版：<br>
+
 [原版](https://m.mi.com/)
 <br>
 

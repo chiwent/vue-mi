@@ -142,8 +142,8 @@ export default {
                   duration: 2000
                 });
                 getCartList({
-                  userName: this.loginUserName,
-                  token: this.loginUserToken
+                  userName: this.loginUserName
+                  // token: this.loginUserToken
                 })
                   .then(res => {
                     if (JSON.stringify(res) !== "{}") {

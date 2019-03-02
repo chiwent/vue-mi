@@ -73,7 +73,7 @@
           <span class="title">已选</span>
           <span
             class="detail"
-          >{{ productDetail.title }} {{ selectedParam.content }} {{ selectedParam.color }} × {{ totalNum }}</span>
+          >{{ productDetail.title }} {{ selectedParam.product }} {{ selectedParam.color }} × {{ totalNum }}</span>
           <div class="arrow"></div>
         </section>
 
@@ -101,7 +101,7 @@
                       v-if="productDetail.type[paramsIndex].oPrice"
                     >￥{{ productDetail.type[paramsIndex].oPrice }}</span>
                   </div>
-                  <p class="desc">{{ productDetail.title }} {{ selectedParam.content }}</p>
+                  <p class="desc">{{ productDetail.title }} {{ selectedParam.product }}</p>
                 </div>
               </div>
             </div>
@@ -115,7 +115,7 @@
                   :class="{'version-selected': paramsIndex === index}"
                   @click="selectVersion(index)"
                 >
-                  <span>{{ item.content }} 全网通</span>
+                  <span>{{ item.product }} 全网通</span>
                   <span>{{ item.price }}</span>
                 </button>
               </div>
@@ -182,7 +182,7 @@
               </div>
             </div>
             <div class="submit-btn-wrapper">
-              <button class="submit-cart" @click="addToCart">加入购物车</button>
+              <button class="submit-cart" @click="addCart">加入购物车</button>
             </div>
           </div>
         </van-popup>
@@ -268,11 +268,11 @@
         <router-link to="/cart" class="bar-item">
           <div class="wrapper">
             <img :src="require('../assets/img/bottom-cart.png')" alt="cart">
-            <span class="cart-badge" v-if="!!cartNumGetters">{{ cartNumGetters }}</span>
+            <span class="cart-badge" v-if="cartNumGetters">{{ cartNumGetters }}</span>
             <span class="word">购物车</span>
           </div>
         </router-link>
-        <button class="add-cart" @click.stop="addToCart">加入购物车</button>
+        <button class="add-cart" @click.stop="addCart">加入购物车</button>
       </div>
     </div>
   </div>
@@ -386,7 +386,8 @@ export default {
 
           if (!this.selectedParam) {
             this.selectedParam = {
-              content: this.defaultParam.content,
+              id: productId,
+              product: this.defaultParam.product,
               price: this.defaultParam.price,
               color: this.defaultParam.def,
               insure: 0,
@@ -428,7 +429,7 @@ export default {
         if (_like <= _likeNew) {
           getLike({
             userName: this.loginUserName,
-            token: this.loginUserToken,
+            // token: this.loginUserToken,
             like: _like
           })
             .then(res => {
@@ -487,7 +488,7 @@ export default {
     selectProduct() {
       let arr = this.productDetail.type[this.paramsIndex];
       this.selectedParam = {
-        content: arr.content,
+        product: arr.product,
         price: arr.price,
         color: arr.color[this.colorIndex].c
       };
@@ -522,8 +523,8 @@ export default {
     /**
      * 加入购物车
      */
-    addToCart() {
-      Object.assign(this.selectedParam, { amount: this.totalNum });
+    addCart() {
+      Object.assign(this.selectedParam, { num: this.totalNum });
       if (this.protectIndex === undefined) {
         delete this.selectedParam["insure"];
       }
@@ -535,6 +536,7 @@ export default {
           path: "/login"
         });
       } else {
+        /*
         this.$store
           .dispatch("addToCart", {
             userName: this.loginUserName,
@@ -549,6 +551,10 @@ export default {
               message: "网络异常!"
             });
           });
+          */
+        this.$notify({
+          message: "未实现功能"
+        });
       }
     }
   }

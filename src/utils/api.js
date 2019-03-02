@@ -15,14 +15,14 @@ export const api = {
  * @param { Object } params 获取订单详情的参数
  */
 export const getOrderList = params => {
-    let { userName, token, type } = params;
+    let { userName, type } = params;
 
     return new Promise((resolve, reject) => {
         axios({
             url: api.orderList,
             params: {
                 userName: userName,
-                token: token,
+                // token: token,
                 type: type
             },
             method: 'POST'
@@ -40,13 +40,13 @@ export const getOrderList = params => {
  * @param { Object } params 获取购物车详情参数
  */
 export const getCartList = params => {
-    let { userName, token } = params;
+    let { userName } = params;
     return new Promise((resolve, reject) => {
         axios({
             url: api.cartList,
             params: {
                 userName: userName,
-                token: token
+                // token: token
             },
             method: 'POST'
         }).then(res => {
@@ -84,13 +84,13 @@ export const getProductDetail = id => {
  * @param { Object } params 点赞的参数
  */
 export const getLike = params => {
-    let { userName, token, like } = params;
+    let { userName, like } = params;
     return new Promise((resolve, reject) => {
         axios({
             url: api.like,
             params: {
                 userName: userName,
-                token: token,
+                // token: token,
                 like: like
             },
             method: 'GET'

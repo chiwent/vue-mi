@@ -74,7 +74,7 @@ export default {
     getList() {
       getOrderList({
         userName: this.loginUserName,
-        token: this.loginUserToken,
+        // token: this.loginUserToken,
         type: this.activeTab
       })
         .then(res => {

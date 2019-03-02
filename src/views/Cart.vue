@@ -312,8 +312,8 @@ export default {
      */
     checkCart() {
       getCartList({
-        userName: this.loginUserName,
-        token: this.loginUserToken
+        userName: this.loginUserName
+        // token: this.loginUserToken
       })
         .then(res => {
           if (JSON.stringify(res) !== "{}") {

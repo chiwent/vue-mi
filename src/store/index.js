@@ -56,6 +56,7 @@ let initProduct, initProductNum;
 
 export default new Vuex.Store({
     state: {
+        isNetworkLoading: false,
         status: initStatus || false,
         userName: initUserName || '',
         token: initUserToken || '',
@@ -115,15 +116,16 @@ export default new Vuex.Store({
         },
         ADDTOCART(state, payload) {
             state.cartList.filter((item, index) => {
-                if (item.productId === payload.productId) {
+                if (item.id === payload.id) {
                     item.num++;
                 } else {
-                    state.cartList.push(payload)
+                    state.cartList.push(payload);
                 }
             });
             state.cartNum = state.cartList.reduce((prev, next) => {
                 return prev.num + next.num;
             });
+            /*
             setStorage({
                 name: 'cartNum',
                 content: state.cartNum,
@@ -134,6 +136,7 @@ export default new Vuex.Store({
                 content: state.cartList,
                 type: 'session'
             });
+            */
         },
         DELETECART(state, payload) {
             state.cartNum = state.cartNum - state.cartList[payload].num;
@@ -177,7 +180,7 @@ export default new Vuex.Store({
                             type: 'session'
                         });
                     }
-                    axios.defaults.headers.common['Authorization'] = token;
+                    // axios.defaults.headers.common['Authorization'] = token;
                     commit('AUTH_SUCCESS', { userName: username, token: token });
                     resolve(res);
                 }).catch(err => {
@@ -247,7 +250,7 @@ export default new Vuex.Store({
                     url: api.addCart,
                     params: {
                         userName: payload.userName,
-                        token: payload.token,
+                        // token: payload.token,
                         para: payload.para
                     },
                     method: 'POST'
@@ -272,7 +275,7 @@ export default new Vuex.Store({
         loginUserToken: state => state.token,
         isLogined: state => !!state.userName,
         authStatus: state => state.status,
-        cartNumGetters: state => state.cartNum.content,
+        cartNumGetters: state => state.cartNum,
         cartList: state => state.cartList
     }
 });
